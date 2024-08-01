@@ -1,0 +1,206 @@
+package churilla.mark.toolrental;
+
+import churilla.mark.toolrental.exception.DiscountPercentageRangeException;
+import churilla.mark.toolrental.exception.InvalidRentalDurationException;
+import churilla.mark.toolrental.exception.UnknownToolCodeException;
+import churilla.mark.toolrental.logic.Checkout;
+import churilla.mark.toolrental.model.RentalAgreement;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class ToolRentalTests {
+    private Checkout checkout;
+
+    @BeforeAll
+    void setup() {
+        checkout = new Checkout();
+    }
+
+    //
+    // Project proof tests.
+    //
+
+    /**
+     *  Test #1 in the specification.
+     *
+     *  Tool code: JAKR
+     *  Checkout date: 9/3/2015
+     *  Rental days: 5
+     *  Discount: 101%
+     *
+     *  This test expects the checkout() method to throw a {@link DiscountPercentageRangeException}.
+     */
+    @Test
+    void test1_JAKR_InvalidDiscount_ExpectException() {
+        assertThrows(
+            DiscountPercentageRangeException.class,
+            () -> checkout.checkout("JAKR", LocalDate.of(2015, 9, 3), 5, 101),
+            "Expected checkout() to throw DiscountPercentageRangeException, but it did not."
+        );
+    }
+
+    /**
+     *  Test #2 in the specification.
+     *
+     *  Tool code: LADW
+     *  Checkout date: 7/2/2020
+     *  Rental days: 3
+     *  Discount: 10%
+     *
+     *  This rental will occur during the July 4th holiday which is on a Saturday making the holiday on July 3rd.
+     *  This rental should have two (2) charged rental days at $1.99 per day for a total of $3.98.
+     *  The discount is set at 10%, or $0.40 giving a final charge of $3.58.
+     */
+    @Test
+    void test2_LADW_ExpectCorrectAmount() {
+        RentalAgreement ra = checkout.checkout("LADW", LocalDate.of(2020, 7, 2), 3, 10);
+
+        assertEquals(2, ra.getChargeableDays());
+        assertEquals(BigDecimal.valueOf(0.40).setScale(2), ra.calculateDiscountAmount());
+        assertEquals(BigDecimal.valueOf(3.98).setScale(2), ra.calculatePreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(3.58).setScale(2), ra.calculateFinalPrice());
+        assertEquals(LocalDate.of(2020, 7, 5), ra.calculateRentalDueDate());
+    }
+
+    /**
+     *  Test #3 in the specification.
+     *
+     *  Tool code: CHNS
+     *  Checkout date: 7/2/15
+     *  Rental days: 5
+     *  Discount: 25%
+     *
+     *  This rental will occur during the July 4th holiday which is on a Saturday making the holiday on July 3rd.
+     *  The rental will charge for the holiday but not the weekend, giving it three (3) charged rental days at $1.49
+     *  per day. The pre-discount price is $4.47. Applying a discount rate of 25% gives a discount of $1.12 for a
+     *  final price of $3.35.
+     */
+    @Test
+    void test3_CHNS_ExpectCorrectAmount() {
+        RentalAgreement ra = checkout.checkout("CHNS", LocalDate.of(2015, 7, 2), 5, 25);
+
+        assertEquals(3, ra.getChargeableDays());
+        assertEquals(BigDecimal.valueOf(1.12).setScale(2), ra.calculateDiscountAmount());
+        assertEquals(BigDecimal.valueOf(4.47).setScale(2), ra.calculatePreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(3.35).setScale(2), ra.calculateFinalPrice());
+        assertEquals(LocalDate.of(2015, 7, 7), ra.calculateRentalDueDate());
+    }
+
+    /**
+     *  Test #4 in the specification.
+     *
+     *  Tool code: JAKD
+     *  Checkout date: 9/3/2015
+     *  Rental days: 6
+     *  Discount: 0%
+     *
+     *  This rental occurs during the Labor Day holiday, which occurs on Sept. 7th.
+     *  Jackhammers have no holiday charge or weekend charge, giving it three (3) charged rental days at $2.99 per day.
+     *  The pre-discount price is $8.97 with no discount being applied therefore $8.97 is the final price.
+     */
+    @Test
+    void test4_JAKD_ExpectCorrectAmount() {
+        RentalAgreement ra = checkout.checkout("JAKD", LocalDate.of(2015, 9, 3), 6, 0);
+
+        assertEquals(3, ra.getChargeableDays());
+        assertEquals(BigDecimal.valueOf(0.00).setScale(2), ra.calculateDiscountAmount());
+        assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.calculatePreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.calculateFinalPrice());
+        assertEquals(LocalDate.of(2015, 9, 9), ra.calculateRentalDueDate());
+    }
+
+    /**
+     *  Test #5 in the specification.
+     *
+     *  Tool code: JAKR
+     *  Checkout date: 7/2/2015
+     *  Rental days: 9
+     *  Discount: 0%
+     *
+     *  This rental occurs during the July 4th holiday which occurs on Saturday, making it July 3rd.
+     *  Jackhammers are not charged on holidays or weekends, giving it five (5) charged days at a rate of $2.99 per day.
+     *  The pre-discount price is $14.95, with no discount being applied making $14.95 the final price.
+     */
+    @Test
+    void test5_JAKR_ExpectCorrectAmount() {
+        RentalAgreement ra = checkout.checkout("JAKR", LocalDate.of(2015, 7, 2), 9, 0);
+
+        assertEquals(5, ra.getChargeableDays());
+        assertEquals(BigDecimal.valueOf(0.00).setScale(2), ra.calculateDiscountAmount());
+        assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.calculatePreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.calculateFinalPrice());
+        assertEquals(LocalDate.of(2015, 7, 11), ra.calculateRentalDueDate());
+    }
+
+    /**
+     *  Test #6 in the specification.
+     *
+     *  Tool code: JAKR
+     *  Checkout date: 7/2/2020
+     *  Rental days: 4
+     *  Discount: 50%
+     *
+     *  This rental occurs during the July 4th holiday which occurs on Saturday, making it July 3rd.
+     *  Jackhammers are not charged on holidays or weekends, giving it one (1) charged day at a rate of $2.99 per day.
+     *  The pre-discount price is $2.99 with a 50% discount being applied. The discount amount is $1.50.
+     *  The final price after discount is $1.49.
+     */
+    @Test
+    void test6_JAKR_ExpectCorrectAmount() {
+        RentalAgreement ra = checkout.checkout("JAKR", LocalDate.of(2020, 7, 2), 4, 50);
+
+        assertEquals(1, ra.getChargeableDays());
+        assertEquals(BigDecimal.valueOf(1.50).setScale(2), ra.calculateDiscountAmount());
+        assertEquals(BigDecimal.valueOf(2.99).setScale(2), ra.calculatePreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(1.49).setScale(2), ra.calculateFinalPrice());
+        assertEquals(LocalDate.of(2020, 7, 6), ra.calculateRentalDueDate());
+    }
+
+    //
+    // Additional Tests
+    //
+
+    /**
+     * Tests that when a rental duration less than zero is entered,
+     * then a {@link InvalidRentalDurationException} is thrown.
+     */
+    @Test
+    void test_RentalDurationLessThanZero_ExpectToThrow_InvalidRentalDurationException() {
+       assertThrows(
+               InvalidRentalDurationException.class,
+               () -> checkout.checkout("CHNS", LocalDate.of(2020, 7, 2), -1, 25),
+               "Expected InvalidRentalDurationException to be thrown but it wasn't."
+       );
+    }
+
+    /**
+     * Tests that when a rental duration of zero is entered, then a {@link InvalidRentalDurationException} is thrown.
+     */
+    @Test
+    void test_RentalDurationIsZero_ExpectToThrow_InvalidRentalDurationException() {
+        assertThrows(
+                InvalidRentalDurationException.class,
+                () -> checkout.checkout("CHNS", LocalDate.of(2020, 7, 2), 0, 25),
+                "Expected InvalidRentalDurationException to be thrown but it wasn't."
+        );
+    }
+
+    /**
+     * Tests that when an unknown tool coode is entered, then a {@link UnknownToolCodeException} is thrown.
+     */
+    @Test
+    void test_UnknownToolCodeEntered_ExpectToThrow_UnknownToolCodeException() {
+        assertThrows(
+                UnknownToolCodeException.class,
+                () -> checkout.checkout("BOBC", LocalDate.of(2020, 7, 2), 15, 25),
+                "Expected UnknownToolCodeException to be thrown but it wasn't."
+        );
+    }
+}
