@@ -1,4 +1,4 @@
-package churilla.mark.toolrental;
+package churilla.mark.toolrental.tests;
 
 import churilla.mark.toolrental.exception.DiscountPercentageRangeException;
 import churilla.mark.toolrental.exception.InvalidRentalDurationException;
