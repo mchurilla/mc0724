@@ -13,19 +13,19 @@ public enum ToolType {
     LADDER("Ladder", new BigDecimal("1.99"), true, true, false);
 
     // Represents the name of the tool type.
-    private String name;
+    private final String name;
 
     // The price for each day the tool is rented.
-    private BigDecimal dailyCharge;
+    private final BigDecimal dailyCharge;
 
     // If the tool has a charge during the weekday (true if it does).
-    private boolean hasWeekdayCharge;
+    private final boolean hasWeekdayCharge;
 
     // If the tool has a charge on the weekend (true if it does).
-    private boolean hasWeekendChange;
+    private final boolean hasWeekendChange;
 
     // If the tool has a charge during a holiday (true if it does).
-    private boolean hasHolidayCharge;
+    private final boolean hasHolidayCharge;
 
      ToolType(final String name,
               final BigDecimal dailyCharge,

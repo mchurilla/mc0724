@@ -17,7 +17,7 @@ public class DiscountPercentageRangeException extends RuntimeException {
     }
 
     /**
-     * COnstructor that takes a message and source exception.
+     * Constructor that takes a message and source exception.
      *
      * @param message A Message detailing the problem that has occurred.
      * @param ex The source exception.

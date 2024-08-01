@@ -6,11 +6,11 @@ package churilla.mark.toolrental.model;
  */
 public class RentableTool {
 
-    private String toolCode;
+    private final String toolCode;
 
-    private ToolType toolType;
+    private final ToolType toolType;
 
-    private String brandName;
+    private final String brandName;
 
     /**
      * Constructor.

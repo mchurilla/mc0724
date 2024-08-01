@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class Checkout {
     // The toolsForRent map provides a way to store the rentable tools, retrievable by the tool code.
-    private Map<String, RentableTool> toolsForRent;
+    private final Map<String, RentableTool> toolsForRent;
 
     /**
      * Constructor.

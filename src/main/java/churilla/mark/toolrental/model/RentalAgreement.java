@@ -14,24 +14,25 @@ import java.time.format.DateTimeFormatter;
  */
 public class RentalAgreement {
 
-    private RentableTool tool;
+    private final RentableTool tool;
 
-    private int rentalDuration;
+    private final int rentalDuration;
 
-    private LocalDate checkoutDate;
+    private final LocalDate checkoutDate;
 
-    private int chargeableDays;
+    private final int chargeableDays;
 
-    private int discount;
+    private final int discount;
 
     /**
      * Constructor for the RentalAgreement class. All properties of this class are passed into the constructor.
      *
-     * @param tool
-     * @param rentalDuration
-     * @param checkoutDate
-     * @param chargeableDays
-     * @param discount
+     * @param tool  The {@link RentableTool} that is being rented.
+     * @param rentalDuration The duration in days of the rental.
+     * @param checkoutDate  The date that the rental was checked out. The rental starts the day after.
+     * @param chargeableDays  The number of days that the customer will be charged. This number could differ
+     *                        from the rental duration since the tool could be free on certain days.
+     * @param discount The discount rate (whole number percent) to apply to the final price.
      */
     public RentalAgreement(final RentableTool tool,
                            final int rentalDuration,
@@ -83,7 +84,7 @@ public class RentalAgreement {
     public BigDecimal calculateDiscountAmount() {
         BigDecimal discountPct = BigDecimal.valueOf(discount / 100f);
 
-        // The total discount is the prediscount price times the discount percent.
+        // The total discount is the pre-discount price times the discount percent.
         return calculatePreDiscountPrice().
                 multiply(discountPct).
                 setScale(2, RoundingMode.HALF_UP);
@@ -101,7 +102,7 @@ public class RentalAgreement {
     }
 
     /**
-     * Overriden toString() method. Prints out the details of the rental agreement in a format fashion.
+     * Overridden toString() method. Prints out the details of the rental agreement in a format fashion.
      *
      * @return A formatted, human-readable string of the rental agreement.
      */

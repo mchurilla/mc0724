@@ -4,11 +4,5 @@
 *.iml
 *.ipr
 
-# IntelliJ IDEA specific files/folders
-.idea/
-*.iws
-*.iml
-*.ipr
-
 # Log files
 *.log
