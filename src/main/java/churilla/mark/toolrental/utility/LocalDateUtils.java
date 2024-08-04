@@ -5,8 +5,9 @@ import java.time.LocalDate;
 import java.time.Month;
 
 /**
- * This LocalDateUtils class provides static utility methods for dealing with the LocalDate objects.
- * This includes determining if a date falls on a holiday.
+ * The LocalDateUtils class provides static utility methods for dealing with the {@link LocalDate} objects.
+ * The functionality currently provides means to determine if a given {@link LocalDate} falls on one of the
+ * recognized holidays.
  */
 public class LocalDateUtils {
 
@@ -51,7 +52,7 @@ public class LocalDateUtils {
      * @return True if the date falls on the observed holiday date, false otherwise.
      */
     public static boolean isIndependenceDayHoliday(final LocalDate date) {
-        // If the July 4th holiday has already occurred, no need to continue. Return false.
+        // If the July 4th holiday has already occurred (July 5th is the latest possible date), no need to continue.
         if (date.isAfter(LocalDate.of(date.getYear(), 7, 5))) {
             return false;
         }

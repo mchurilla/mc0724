@@ -1,38 +1,36 @@
 package churilla.mark.toolrental.logic;
 
 import churilla.mark.toolrental.exception.DiscountPercentageRangeException;
+import churilla.mark.toolrental.exception.FatalException;
 import churilla.mark.toolrental.exception.InvalidRentalDurationException;
-import churilla.mark.toolrental.exception.UnknownToolCodeException;
 import churilla.mark.toolrental.model.RentableTool;
 import churilla.mark.toolrental.model.RentalAgreement;
 import churilla.mark.toolrental.model.ToolType;
+import churilla.mark.toolrental.service.ToolService;
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Map;
 
 import static churilla.mark.toolrental.utility.LocalDateUtils.isHoliday;
 
 /**
  * The Checkout class handles the process of renting tools and creating rental agreements.
- * It maintains a catalog of rentable tools and provides functionality to generate a {@link RentalAgreement}
- * based on the tool selected, the rental duration, and any applicable discounts.
+ * It provides functionality to generate a {@link RentalAgreement} based on the tool selected, the rental duration,
+ * rental period, and any applicable discounts.
  */
 public class Checkout {
-    // The toolsForRent map provides a way to store the rentable tools, retrievable by the tool code.
-    private final Map<String, RentableTool> toolsForRent;
+    private final ToolService toolService;
 
     /**
      * Constructor.
      */
-    public Checkout() {
-        // Initialize a map of tools to be rented.
-        this.toolsForRent = Map.ofEntries(
-                Map.entry("CHNS", new RentableTool("CHNS", ToolType.CHAINSAW, "Stihl")),
-                Map.entry("LADW", new RentableTool("LADW", ToolType.LADDER, "Werner")),
-                Map.entry("JAKD", new RentableTool("JAKD", ToolType.JACKHAMMER, "DeWalt")),
-                Map.entry("JAKR", new RentableTool("JAKR", ToolType.JACKHAMMER, "Ridgid"))
-        );
+    public Checkout() throws FatalException {
+        try {
+            toolService = new ToolService();
+        } catch (IOException ex) {
+            throw new FatalException("An error occurred while reading the ToolsDb.json file.", ex);
+        }
     }
 
     /**
@@ -58,13 +56,8 @@ public class Checkout {
             throw new DiscountPercentageRangeException("The discount that was entered is invalid. Please re-enter a value from 0 to 100.");
         }
 
-        // Handle the case where an invalid product/tool code is entered.
-        if (!toolsForRent.containsKey(toolCode)) {
-            throw new UnknownToolCodeException("An unknown tool code was entered. Please check the tool code and try again.");
-        }
-
         // Get the tool from the map that is being rented.
-        RentableTool tool = toolsForRent.get(toolCode);
+        RentableTool tool = toolService.getRentableTool(toolCode);
 
         // Determine how many days of the rental duration will be charged (some tools are not charged on certain days).
         int chargedDays = rentalDuration;
@@ -74,10 +67,8 @@ public class Checkout {
             }
         }
 
-        return new RentalAgreement(tool, rentalDuration, checkoutDate,chargedDays, discount);
+        return new RentalAgreement(tool, rentalDuration, checkoutDate, chargedDays, discount);
     }
-
-
 
     /**
      * Checks if the tool type should be free of charge for the given day.
@@ -92,15 +83,17 @@ public class Checkout {
         // A tool is potentially free in the following scenarios:
         // Weekdays (Mon - Fri), Weekends (Sat - Sun), specific holidays.
 
-        // First check if the tool is free for a holiday.
-        if (isHoliday(date)) {
-            return !toolType.hasHolidayCharge();
+        // First check if the tool is free for a holiday. If the date is a holiday, and the tool is free
+        // for holidays, then return true because checking for weekday / weekend is not necessary.
+        if (isHoliday(date) &&
+                !toolType.hasHolidayCharge()) {
+            return true;
         }
 
         // Next check if the tool is free on the weekends or weekdays.
         if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
             // Check if the tool is free (not charged) on weekends.
-            return !toolType.hasWeekendChange();
+            return !toolType.hasWeekendCharge();
         }
         else {
             // Check if the tool is free on the weekdays.

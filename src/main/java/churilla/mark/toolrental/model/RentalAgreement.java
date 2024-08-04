@@ -6,11 +6,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
- * The RentalAgreement class encapsulates the details of a rental agreement for a tool.
- * It includes information about the rented tool, the duration of the rental, and discount rate.
- * This class provides methods to calculate important values such as the rental due date, the total
- * chargeable amount before and after discounts, and the number of chargeable days within the rental
- * period.
+ * The RentalAgreement class is an immutable class that encapsulates the details of a rental agreement for a tool.
+ * It includes information about the rented tool, the duration of the rental, discount rate and the number of
+ * chargeable days. This class provides methods to calculate other important values such as the rental due date,
+ * the total chargeable amount before and after discounts, and the amount discounted.
  */
 public class RentalAgreement {
 
@@ -25,7 +24,8 @@ public class RentalAgreement {
     private final int discount;
 
     /**
-     * Constructor for the RentalAgreement class. All properties of this class are passed into the constructor.
+     * Constructor for the RentalAgreement class. This class is immutable and all properties of this class
+     * are passed into the constructor.
      *
      * @param tool  The {@link RentableTool} that is being rented.
      * @param rentalDuration The duration in days of the rental.
@@ -56,7 +56,7 @@ public class RentalAgreement {
     }
 
     /**
-     * Calculates the rental due date by adding the rental duration to the rental start date.
+     * Calculates the rental due date by adding the rental duration to the checkout date.
      *
      * @return The date the rental is due to be returned.
      */
@@ -82,7 +82,7 @@ public class RentalAgreement {
      * @return The total amount being discounted from the price.
      */
     public BigDecimal calculateDiscountAmount() {
-        BigDecimal discountPct = BigDecimal.valueOf(discount / 100f);
+        BigDecimal discountPct = BigDecimal.valueOf(discount).divide(BigDecimal.valueOf(100));
 
         // The total discount is the pre-discount price times the discount percent.
         return calculatePreDiscountPrice().
@@ -102,7 +102,7 @@ public class RentalAgreement {
     }
 
     /**
-     * Overridden toString() method. Prints out the details of the rental agreement in a format fashion.
+     * Overridden toString() method. Prints out the details of the rental agreement in a formatted fashion.
      *
      * @return A formatted, human-readable string of the rental agreement.
      */

@@ -1,6 +1,7 @@
 package churilla.mark.toolrental.tests;
 
 import churilla.mark.toolrental.exception.DiscountPercentageRangeException;
+import churilla.mark.toolrental.exception.FatalException;
 import churilla.mark.toolrental.exception.InvalidRentalDurationException;
 import churilla.mark.toolrental.exception.UnknownToolCodeException;
 import churilla.mark.toolrental.logic.Checkout;
@@ -20,7 +21,11 @@ public class ToolRentalTests {
 
     @BeforeAll
     void setup() {
-        checkout = new Checkout();
+        try {
+            checkout = new Checkout();
+        } catch (FatalException ex) {
+            throw new RuntimeException("An error occurred when initializing Checkout object", ex);
+        }
     }
 
     //
@@ -67,6 +72,8 @@ public class ToolRentalTests {
         assertEquals(BigDecimal.valueOf(3.98).setScale(2), ra.calculatePreDiscountPrice());
         assertEquals(BigDecimal.valueOf(3.58).setScale(2), ra.calculateFinalPrice());
         assertEquals(LocalDate.of(2020, 7, 5), ra.calculateRentalDueDate());
+
+        System.out.println(ra.toString());
     }
 
     /**
@@ -91,6 +98,8 @@ public class ToolRentalTests {
         assertEquals(BigDecimal.valueOf(4.47).setScale(2), ra.calculatePreDiscountPrice());
         assertEquals(BigDecimal.valueOf(3.35).setScale(2), ra.calculateFinalPrice());
         assertEquals(LocalDate.of(2015, 7, 7), ra.calculateRentalDueDate());
+
+        System.out.println(ra.toString());
     }
 
     /**
@@ -114,6 +123,8 @@ public class ToolRentalTests {
         assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.calculatePreDiscountPrice());
         assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.calculateFinalPrice());
         assertEquals(LocalDate.of(2015, 9, 9), ra.calculateRentalDueDate());
+
+        System.out.println(ra.toString());
     }
 
     /**
@@ -137,6 +148,8 @@ public class ToolRentalTests {
         assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.calculatePreDiscountPrice());
         assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.calculateFinalPrice());
         assertEquals(LocalDate.of(2015, 7, 11), ra.calculateRentalDueDate());
+
+        System.out.println(ra.toString());
     }
 
     /**
@@ -161,6 +174,8 @@ public class ToolRentalTests {
         assertEquals(BigDecimal.valueOf(2.99).setScale(2), ra.calculatePreDiscountPrice());
         assertEquals(BigDecimal.valueOf(1.49).setScale(2), ra.calculateFinalPrice());
         assertEquals(LocalDate.of(2020, 7, 6), ra.calculateRentalDueDate());
+
+        System.out.println(ra.toString());
     }
 
     //
@@ -193,7 +208,7 @@ public class ToolRentalTests {
     }
 
     /**
-     * Tests that when an unknown tool coode is entered, then a {@link UnknownToolCodeException} is thrown.
+     * Tests that when an unknown tool code is entered, then a {@link UnknownToolCodeException} is thrown.
      */
     @Test
     void test_UnknownToolCodeEntered_ExpectToThrow_UnknownToolCodeException() {

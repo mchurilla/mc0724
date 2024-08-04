@@ -1,76 +1,87 @@
 package churilla.mark.toolrental.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 
 /**
- * An enum that represents the type of tool(s) that can be rented. It also contains information pertaining to
- * the daily rate charged to rent it, and whether it is free during certain timeframes (i.e., weekday, weekend, holiday).
+ * An immutable class that represents the type of tool(s) that can be rented. It contains information pertaining
+ * to the daily rate charged to rent it, and whether it is free during certain timeframes (i.e., weekday, weekend, holiday).
  */
-public enum ToolType {
-
-    CHAINSAW("Chainsaw", new BigDecimal("1.49"), true, false, true),
-    JACKHAMMER("Jackhammer", new BigDecimal("2.99"), true, false, false),
-    LADDER("Ladder", new BigDecimal("1.99"), true, true, false);
-
-    // Represents the name of the tool type.
+public class ToolType {
     private final String name;
-
-    // The price for each day the tool is rented.
     private final BigDecimal dailyCharge;
-
-    // If the tool has a charge during the weekday (true if it does).
     private final boolean hasWeekdayCharge;
-
-    // If the tool has a charge on the weekend (true if it does).
-    private final boolean hasWeekendChange;
-
-    // If the tool has a charge during a holiday (true if it does).
+    private final boolean hasWeekendCharge;
     private final boolean hasHolidayCharge;
 
-     ToolType(final String name,
-              final BigDecimal dailyCharge,
-              final boolean hasWeekdayCharge,
-              final boolean hasWeekendChange,
-              final boolean hasHolidayCharge) {
-         this.name = name;
-         this.dailyCharge = dailyCharge;
-         this.hasWeekdayCharge = hasWeekdayCharge;
-         this.hasWeekendChange = hasWeekendChange;
-         this.hasHolidayCharge = hasHolidayCharge;
-     }
+    /**
+     * Serializable / deserializable constructor.
+     *
+     * @param toolName The name of the tool.
+     * @param dailyCharge The amount this tool costs for each day it is rented.
+     * @param hasWeekdayCharge Whether to charge for this tool on a weekday.
+     * @param hasWeekendCharge Whether to charge for this tool on a weekend.
+     * @param hasHolidayCharge Whether to charge for this tool on an observed holiday.
+     */
+    @JsonCreator
+    public ToolType(@JsonProperty("name") final String toolName,
+                    @JsonProperty("dailyCharge") final BigDecimal dailyCharge,
+                    @JsonProperty("hasWeekdayCharge") final boolean hasWeekdayCharge,
+                    @JsonProperty("hasWeekendCharge") final boolean hasWeekendCharge,
+                    @JsonProperty("hasHolidayCharge") final boolean hasHolidayCharge) {
+        this.name = toolName;
+        this.dailyCharge = dailyCharge;
+        this.hasWeekdayCharge = hasWeekdayCharge;
+        this.hasWeekendCharge = hasWeekendCharge;
+        this.hasHolidayCharge = hasHolidayCharge;
+    }
+
+    // Getters
 
     /**
-     * Used to get the string representation of the enumeration value.
+     * Gets the name of the tool type (i.e., Chainsaw)
      *
-     * @return String representation of the enum value.
+     * @return A String representation of the tool type name.
      */
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
     /**
-     * Gets the daily charge for the tool type.
+     * Returns the amount that the tool is charged for each day it is rented.
      *
-     * @return The charge per day to rent the tool.
+     * @return A {@link BigDecimal} representation of the amount to be charged per day.
      */
-    public BigDecimal getDailyCharge() { return dailyCharge; }
+    public BigDecimal getDailyCharge() {
+        return dailyCharge;
+    }
 
     /**
-     * Whether this tool is free during the weekdays or has a charge.
+     * Specifies if this tool type has a daily charge applied during a weekday.
      *
-     * @return True if there is a charge, false if it is free.
+     * @return True if it is charged on a weekday, false if it is free.
      */
-    public boolean hasWeekdayCharge() { return hasWeekdayCharge; }
+    public boolean hasWeekdayCharge () {
+        return hasWeekdayCharge;
+    }
 
     /**
-     * Whether this tool is free during the weekend or has a charge.
+     * Specifies if this tool type has a daily charge applied during the weekend.
      *
-     * @return True if there is a charge, false if it is free.
+     * @return True if it is charged on the weekend, false if it is free.
      */
-    public boolean hasWeekendChange() { return hasWeekendChange; }
+    public boolean hasWeekendCharge() {
+        return hasWeekendCharge;
+    }
 
     /**
-     * Whether this tool is free during a  holiday or has a charge.
+     * Specifies if this tool type has a daily charge applied during an observed holiday.
      *
-     * @return True if there is a charge, false if it is free.
+     * @return True if it is charged on a holiday, false if it is free.
      */
-    public boolean hasHolidayCharge() { return hasHolidayCharge; }
+    public boolean hasHolidayCharge() {
+        return hasHolidayCharge;
+    }
 }
