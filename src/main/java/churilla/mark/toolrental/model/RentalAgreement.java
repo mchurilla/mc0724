@@ -53,7 +53,7 @@ public class RentalAgreement {
 
         validateInput();
 
-        BigDecimal discountPct = BigDecimal.valueOf(discount).divide(BigDecimal.valueOf(100));
+        BigDecimal discountPct = BigDecimal.valueOf(discount).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
         // Calculate the pre-discount price, the discount amount, and the final price.
         preDiscountPrice = tool.getToolType()

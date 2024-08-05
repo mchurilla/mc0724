@@ -2,14 +2,15 @@ package churilla.mark.toolrental.exception;
 
 /**
  * Exception thrown when a required field is null.
- *
+ * <p>
  * This exception indicates that a field that is expected to be non-null (i.e., a required field)
  * is found to be null. It is typically used in scenarios where certain fields must be provided
  * for the proper functioning of an operation or object instantiation, and a null value for such
  * fields is considered a critical error.
- *
+ * </p><p>
  * this exception requires that the name of the required field be passed to the constructor and can be
  * accessed via a getter for use in custom exception messages.
+ * </p>
  */
 public class RequiredFieldNullException extends RuntimeException {
 

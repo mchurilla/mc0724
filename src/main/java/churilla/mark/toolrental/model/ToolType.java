@@ -124,11 +124,10 @@ public class ToolType {
             return true;
         }
 
-        if (obj == null || !(obj instanceof ToolType)) {
+        if (!(obj instanceof ToolType other)) {
             return false;
         }
 
-        ToolType other = (ToolType) obj;
         return name.equals(other.getName()) &&
                 dailyCharge.equals(other.getDailyCharge()) &&
                 hasWeekdayCharge == other.hasWeekdayCharge() &&

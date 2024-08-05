@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,12 +68,12 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("LADW", LocalDate.of(2020, 7, 2), 3, 10);
 
         assertEquals(2, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(0.40).setScale(2), ra.getDiscountAmount());
-        assertEquals(BigDecimal.valueOf(3.98).setScale(2), ra.getPreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(3.58).setScale(2), ra.getFinalPrice());
+        assertEquals(BigDecimal.valueOf(0.40).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(3.98).setScale(2, RoundingMode.HALF_UP), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(3.58).setScale(2, RoundingMode.HALF_UP), ra.getFinalPrice());
         assertEquals(LocalDate.of(2020, 7, 5), ra.getRentalDueDate());
 
-        System.out.println(ra.toString());
+        System.out.println(ra);
     }
 
     /**
@@ -93,12 +94,12 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("CHNS", LocalDate.of(2015, 7, 2), 5, 25);
 
         assertEquals(3, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(1.12).setScale(2), ra.getDiscountAmount());
-        assertEquals(BigDecimal.valueOf(4.47).setScale(2), ra.getPreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(3.35).setScale(2), ra.getFinalPrice());
+        assertEquals(BigDecimal.valueOf(1.12).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(4.47).setScale(2, RoundingMode.HALF_UP), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(3.35).setScale(2, RoundingMode.HALF_UP), ra.getFinalPrice());
         assertEquals(LocalDate.of(2015, 7, 7), ra.getRentalDueDate());
 
-        System.out.println(ra.toString());
+        System.out.println(ra);
     }
 
     /**
@@ -118,12 +119,12 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("JAKD", LocalDate.of(2015, 9, 3), 6, 0);
 
         assertEquals(3, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(0.00).setScale(2), ra.getDiscountAmount());
-        assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.getPreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.getFinalPrice());
+        assertEquals(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(8.97).setScale(2, RoundingMode.HALF_UP), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(8.97).setScale(2, RoundingMode.HALF_UP), ra.getFinalPrice());
         assertEquals(LocalDate.of(2015, 9, 9), ra.getRentalDueDate());
 
-        System.out.println(ra.toString());
+        System.out.println(ra);
     }
 
     /**
@@ -143,12 +144,12 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("JAKR", LocalDate.of(2015, 7, 2), 9, 0);
 
         assertEquals(5, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(0.00).setScale(2), ra.getDiscountAmount());
-        assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.getPreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.getFinalPrice());
+        assertEquals(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(14.95).setScale(2, RoundingMode.HALF_UP), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(14.95).setScale(2, RoundingMode.HALF_UP), ra.getFinalPrice());
         assertEquals(LocalDate.of(2015, 7, 11), ra.getRentalDueDate());
 
-        System.out.println(ra.toString());
+        System.out.println(ra);
     }
 
     /**
@@ -169,12 +170,12 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("JAKR", LocalDate.of(2020, 7, 2), 4, 50);
 
         assertEquals(1, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(1.50).setScale(2), ra.getDiscountAmount());
-        assertEquals(BigDecimal.valueOf(2.99).setScale(2), ra.getPreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(1.49).setScale(2), ra.getFinalPrice());
+        assertEquals(BigDecimal.valueOf(1.50).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(2.99).setScale(2, RoundingMode.HALF_UP), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(1.49).setScale(2, RoundingMode.HALF_UP), ra.getFinalPrice());
         assertEquals(LocalDate.of(2020, 7, 6), ra.getRentalDueDate());
 
-        System.out.println(ra.toString());
+        System.out.println(ra);
     }
 
     //

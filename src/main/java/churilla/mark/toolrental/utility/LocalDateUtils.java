@@ -6,9 +6,10 @@ import java.time.Month;
 
 /**
  * Utility class that provides static methods for working with {@link LocalDate} objects.
- *
+ * <p>
  * The functionality currently offers methods to determine if a given {@link LocalDate} falls on one of the
  * recognized holidays.
+ * </p>
  */
 public class LocalDateUtils {
 

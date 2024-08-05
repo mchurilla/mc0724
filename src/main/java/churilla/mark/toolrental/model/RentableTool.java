@@ -97,11 +97,10 @@ public class RentableTool {
             return true;
         }
 
-        if (obj == null || !(obj instanceof RentableTool)) {
+        if (!(obj instanceof RentableTool other)) {
             return false;
         }
 
-        RentableTool other = (RentableTool) obj;
         return toolCode.equals(other.getToolCode()) &&
                 toolType.equals(other.getToolType()) &&
                 brandName.equals(other.getBrandName());

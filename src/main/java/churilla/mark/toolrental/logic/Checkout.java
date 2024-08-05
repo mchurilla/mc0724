@@ -1,8 +1,6 @@
 package churilla.mark.toolrental.logic;
 
-import churilla.mark.toolrental.exception.DiscountPercentageRangeException;
 import churilla.mark.toolrental.exception.FatalException;
-import churilla.mark.toolrental.exception.InvalidRentalDurationException;
 import churilla.mark.toolrental.model.RentableTool;
 import churilla.mark.toolrental.model.RentalAgreement;
 import churilla.mark.toolrental.model.ToolType;

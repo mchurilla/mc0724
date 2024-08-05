@@ -2,9 +2,10 @@ package churilla.mark.toolrental.exception;
 
 /**
  * An exception class that is thrown when an unknown or invalid tool code is entered during checkout.
- *
+ * <p>
  * This exception indicates that the tool code provided during the checkout process does not
  * correspond to any known or valid tool in the system.
+ * </p>
  */
 public class UnknownToolCodeException extends RuntimeException {
     /**

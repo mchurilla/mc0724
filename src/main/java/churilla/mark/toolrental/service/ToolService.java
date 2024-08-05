@@ -13,18 +13,16 @@ import java.util.Map;
 
 /**
  * Service class that provides access to and manages rentable tool data.
- *
+ * <p>
  * The ToolService class acts as an gateway for interacting with the tool data stored in
  * the `ToolDb.json` file. This file serves as a stand-in for a document database, such as MongoDB,
  * and simulates a collection of rentable tools.
+ * </p>
  */
 public class ToolService {
 
     // Internally used HashMap to store the rentable tool instances that are read in from the ToolDb.json file.
     private final Map<String, RentableTool> rentableToolMap = new HashMap<>();
-
-    // JSON serializer / deserializer.
-    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Constructor. Reads the values from the ToolDb.json file initializes the tool map using the tool codes as keys.
@@ -34,15 +32,17 @@ public class ToolService {
      *                     in a partially constructed state. The caller should handle the error appropriately.
      */
     public ToolService() throws IOException {
+        // JSON serializer / deserializer.
+        ObjectMapper mapper = new ObjectMapper();
+
         // Attempt to read the values from ToolDb.json.
         // If the file is not available or cannot be read, an IOException will be thrown back to the caller.
         java.io.File resourceFile = ResourceUtils.getResourceFile("ToolDb.json");
         List<RentableTool> rentableToolList = mapper.readValue(resourceFile,
-                                                                new TypeReference<List<RentableTool>>() {});
+                                                                new TypeReference<>() {});
 
         // Cycle through the list of tools and add each on to the map, using the tool code as the key.
-        rentableToolList.stream()
-                .forEach(tool -> rentableToolMap.putIfAbsent(tool.getToolCode(), tool));
+        rentableToolList.forEach(tool -> rentableToolMap.putIfAbsent(tool.getToolCode(), tool));
     }
 
     /**

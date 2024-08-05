@@ -11,8 +11,9 @@ public class ResourceUtils {
 
     /**
      * Retrieves a file from the classpath, typically from the `src/main/resources` directory.
-     *
+     * <p>
      * If the resource is not found, this method will throw back a {@link FileNotFoundException}.
+     * </p>
      *
      * @param resourceFilename the name of the resource file to retrieve, relative to the classpath.
      * @return a {@link File} object representing the resource file.
