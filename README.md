@@ -2,7 +2,7 @@
 
 This project is built using Java 17 and uses Maven as a dependecy manager.
 
-## Maven dependecies
+## Maven dependencies
 
 This project uses the following dependencies:
 - **JUnit (v5.10.3)**: Used to build and run the unit tests.
