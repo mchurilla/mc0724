@@ -1,11 +1,10 @@
 package churilla.mark.toolrental.tests;
 
-import churilla.mark.toolrental.exception.DiscountPercentageRangeException;
-import churilla.mark.toolrental.exception.FatalException;
-import churilla.mark.toolrental.exception.InvalidRentalDurationException;
-import churilla.mark.toolrental.exception.UnknownToolCodeException;
+import churilla.mark.toolrental.exception.*;
 import churilla.mark.toolrental.logic.Checkout;
+import churilla.mark.toolrental.model.RentableTool;
 import churilla.mark.toolrental.model.RentalAgreement;
+import churilla.mark.toolrental.model.ToolType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -68,10 +67,10 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("LADW", LocalDate.of(2020, 7, 2), 3, 10);
 
         assertEquals(2, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(0.40).setScale(2), ra.calculateDiscountAmount());
-        assertEquals(BigDecimal.valueOf(3.98).setScale(2), ra.calculatePreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(3.58).setScale(2), ra.calculateFinalPrice());
-        assertEquals(LocalDate.of(2020, 7, 5), ra.calculateRentalDueDate());
+        assertEquals(BigDecimal.valueOf(0.40).setScale(2), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(3.98).setScale(2), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(3.58).setScale(2), ra.getFinalPrice());
+        assertEquals(LocalDate.of(2020, 7, 5), ra.getRentalDueDate());
 
         System.out.println(ra.toString());
     }
@@ -94,10 +93,10 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("CHNS", LocalDate.of(2015, 7, 2), 5, 25);
 
         assertEquals(3, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(1.12).setScale(2), ra.calculateDiscountAmount());
-        assertEquals(BigDecimal.valueOf(4.47).setScale(2), ra.calculatePreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(3.35).setScale(2), ra.calculateFinalPrice());
-        assertEquals(LocalDate.of(2015, 7, 7), ra.calculateRentalDueDate());
+        assertEquals(BigDecimal.valueOf(1.12).setScale(2), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(4.47).setScale(2), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(3.35).setScale(2), ra.getFinalPrice());
+        assertEquals(LocalDate.of(2015, 7, 7), ra.getRentalDueDate());
 
         System.out.println(ra.toString());
     }
@@ -119,10 +118,10 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("JAKD", LocalDate.of(2015, 9, 3), 6, 0);
 
         assertEquals(3, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(0.00).setScale(2), ra.calculateDiscountAmount());
-        assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.calculatePreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.calculateFinalPrice());
-        assertEquals(LocalDate.of(2015, 9, 9), ra.calculateRentalDueDate());
+        assertEquals(BigDecimal.valueOf(0.00).setScale(2), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(8.97).setScale(2), ra.getFinalPrice());
+        assertEquals(LocalDate.of(2015, 9, 9), ra.getRentalDueDate());
 
         System.out.println(ra.toString());
     }
@@ -144,10 +143,10 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("JAKR", LocalDate.of(2015, 7, 2), 9, 0);
 
         assertEquals(5, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(0.00).setScale(2), ra.calculateDiscountAmount());
-        assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.calculatePreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.calculateFinalPrice());
-        assertEquals(LocalDate.of(2015, 7, 11), ra.calculateRentalDueDate());
+        assertEquals(BigDecimal.valueOf(0.00).setScale(2), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(14.95).setScale(2), ra.getFinalPrice());
+        assertEquals(LocalDate.of(2015, 7, 11), ra.getRentalDueDate());
 
         System.out.println(ra.toString());
     }
@@ -170,10 +169,10 @@ public class ToolRentalTests {
         RentalAgreement ra = checkout.checkout("JAKR", LocalDate.of(2020, 7, 2), 4, 50);
 
         assertEquals(1, ra.getChargeableDays());
-        assertEquals(BigDecimal.valueOf(1.50).setScale(2), ra.calculateDiscountAmount());
-        assertEquals(BigDecimal.valueOf(2.99).setScale(2), ra.calculatePreDiscountPrice());
-        assertEquals(BigDecimal.valueOf(1.49).setScale(2), ra.calculateFinalPrice());
-        assertEquals(LocalDate.of(2020, 7, 6), ra.calculateRentalDueDate());
+        assertEquals(BigDecimal.valueOf(1.50).setScale(2), ra.getDiscountAmount());
+        assertEquals(BigDecimal.valueOf(2.99).setScale(2), ra.getPreDiscountPrice());
+        assertEquals(BigDecimal.valueOf(1.49).setScale(2), ra.getFinalPrice());
+        assertEquals(LocalDate.of(2020, 7, 6), ra.getRentalDueDate());
 
         System.out.println(ra.toString());
     }
@@ -216,6 +215,73 @@ public class ToolRentalTests {
                 UnknownToolCodeException.class,
                 () -> checkout.checkout("BOBC", LocalDate.of(2020, 7, 2), 15, 25),
                 "Expected UnknownToolCodeException to be thrown but it wasn't."
+        );
+    }
+
+    /**
+     * Tests that when either the name or daily charge values passed to the {@link ToolType} constructor are null,
+     * then a {@link RequiredFieldNullException} is thrown.
+     */
+    @Test
+    void test_nullRequiredValues_PassedToToolTypeConstructor_ExpectException() {
+        assertThrows(
+                RequiredFieldNullException.class,
+                () -> new ToolType(null, BigDecimal.valueOf(9.99), true, true, true),
+                "Expected RequiredFieldNullException to be thrown when tool type name is null but it wasn't."
+        );
+
+        assertThrows(
+                RequiredFieldNullException.class,
+                () -> new ToolType("FAKE", null, true, true, true),
+                "Expected RequiredFieldNullException to be thrown when daily charge is null but it wasn't."
+        );
+    }
+
+    /**
+     * Tests that when any of the values passed to the {@link RentableTool} constructor are null,
+     * then a {@link RequiredFieldNullException} is thrown.
+     */
+    @Test
+    void nullRequiredValues_PassedToRentableToolConstructor_ExpectException() {
+        ToolType fakeToolType = new ToolType("FAKE", BigDecimal.valueOf(9.99), true, true, true);
+
+        assertThrows(
+                RequiredFieldNullException.class,
+                () -> new RentableTool(null, fakeToolType, "FAKE"),
+                "Expected RequiredFieldNullException to be thrown when tool code is null, but it wasn't."
+        );
+
+        assertThrows(
+                RequiredFieldNullException.class,
+                () -> new RentableTool("FAKE", null, "FAKE"),
+                "Expected RequiredFieldNullException to be thrown when tool type is null, but it wasn't."
+        );
+
+        assertThrows(
+                RequiredFieldNullException.class,
+                () -> new RentableTool("FAKE", fakeToolType, null),
+                "Expected RequiredFieldNullException to be thrown when brand name is null, but it wasn't."
+        );
+    }
+
+    /**
+     * Tests that when a null value is passed to the RentalAgreement constructor for either the tool or checkout date
+     * fields, that a {@link RequiredFieldNullException} is thrown.
+     */
+    @Test
+    void test_nullRequiredValues_PassedToRentalAgreementConstructor_ExpectExceptions() {
+        assertThrows(
+                RequiredFieldNullException.class,
+                () -> new RentalAgreement(null, 5, LocalDate.of(2020, 7, 2), 0, 0),
+                "Expected RequiredFieldNullException to be thrown when tool is null, but it wasn't."
+        );
+
+        ToolType type = new ToolType("FAKE", BigDecimal.valueOf(9.99), true, true, true);
+        RentableTool tool = new RentableTool("FAKE", type, "FAKE");
+        assertThrows(
+                RequiredFieldNullException.class,
+                () -> new RentalAgreement(tool, 5, null, 0, 0),
+                "Expected RequiredFieldNullException to be thrown when checkout date is null, but it wasn't."
         );
     }
 }

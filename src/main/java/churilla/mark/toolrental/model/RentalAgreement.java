@@ -1,5 +1,9 @@
 package churilla.mark.toolrental.model;
 
+import churilla.mark.toolrental.exception.DiscountPercentageRangeException;
+import churilla.mark.toolrental.exception.InvalidRentalDurationException;
+import churilla.mark.toolrental.exception.RequiredFieldNullException;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -14,14 +18,16 @@ import java.time.format.DateTimeFormatter;
 public class RentalAgreement {
 
     private final RentableTool tool;
-
     private final int rentalDuration;
-
     private final LocalDate checkoutDate;
-
+    private final LocalDate rentalDueDate;
     private final int chargeableDays;
-
     private final int discount;
+    private final BigDecimal discountAmount;
+    private final BigDecimal preDiscountPrice;
+    private final BigDecimal finalPrice;
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yy");
 
     /**
      * Constructor for the RentalAgreement class. This class is immutable and all properties of this class
@@ -44,10 +50,28 @@ public class RentalAgreement {
         this.checkoutDate = checkoutDate;
         this.chargeableDays = chargeableDays;
         this.discount = discount;
+
+        validateInput();
+
+        BigDecimal discountPct = BigDecimal.valueOf(discount).divide(BigDecimal.valueOf(100));
+
+        // Calculate the pre-discount price, the discount amount, and the final price.
+        preDiscountPrice = tool.getToolType()
+                .getDailyCharge()
+                .multiply(BigDecimal.valueOf(chargeableDays))
+                .setScale(2, RoundingMode.HALF_UP);
+
+        discountAmount = preDiscountPrice.multiply(discountPct)
+                                           .setScale(2, RoundingMode.HALF_UP);
+
+        finalPrice = preDiscountPrice.subtract(discountAmount)
+                                     .setScale(2, RoundingMode.HALF_UP);
+
+        rentalDueDate = checkoutDate.plusDays(rentalDuration);
     }
 
     /**
-     * Getter for the chargeableDays property.
+     * Returns the number of chargeable days.
      *
      * @return The number of days to charge the customer.
      */
@@ -56,49 +80,64 @@ public class RentalAgreement {
     }
 
     /**
-     * Calculates the rental due date by adding the rental duration to the checkout date.
+     * Returns the precalculated discount amount.
      *
-     * @return The date the rental is due to be returned.
+     * @return The amount that is subtracted to give the final price.
      */
-    public LocalDate calculateRentalDueDate() {
-        return checkoutDate.plusDays(rentalDuration);
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
     }
 
     /**
-     * Calculates the total price of the rental before taking the discount into account.
+     * Returns the precalculated pre-discount price.
      *
-     * @return The price of the rental without the discount.
+     * @return The total price of the rental prior to having the discount applied.
      */
-    public BigDecimal calculatePreDiscountPrice() {
-            return tool.getToolType()
-                    .getDailyCharge()
-                    .multiply(BigDecimal.valueOf(chargeableDays))
-                    .setScale(2, RoundingMode.HALF_UP);
+    public BigDecimal getPreDiscountPrice() {
+        return preDiscountPrice;
     }
 
     /**
-     * Calculates the total amount of discount to apply to the total.
+     * Returns the precalculated final price of the rental.
      *
-     * @return The total amount being discounted from the price.
+     * @return The final price of the rental after the discount has been applied.
      */
-    public BigDecimal calculateDiscountAmount() {
-        BigDecimal discountPct = BigDecimal.valueOf(discount).divide(BigDecimal.valueOf(100));
-
-        // The total discount is the pre-discount price times the discount percent.
-        return calculatePreDiscountPrice().
-                multiply(discountPct).
-                setScale(2, RoundingMode.HALF_UP);
+    public BigDecimal getFinalPrice() {
+        return finalPrice;
     }
 
     /**
-     * Calculates the final price of the rental with the discount applied.
+     * Returns the rental due date, which is calculated based on the rental duration.
      *
-     * @return The final price, discount included.
+     * @return The due date for returning the rented tool.
      */
-    public BigDecimal calculateFinalPrice() {
-        return calculatePreDiscountPrice()
-                .subtract(calculateDiscountAmount())
-                .setScale(2, RoundingMode.HALF_UP);
+    public LocalDate getRentalDueDate() {
+        return rentalDueDate;
+    }
+
+    /**
+     * Validates the information critical to creating a rental agreement. If any of the input is invalid,
+     * this makes the entire agreement invalid.
+     */
+    private void validateInput() {
+        if (tool == null) {
+            throw new RequiredFieldNullException("tool");
+        }
+        if (checkoutDate == null) {
+            throw new RequiredFieldNullException("checkoutDate");
+        }
+
+        if (rentalDuration < 1) {
+            throw new InvalidRentalDurationException("The duration of the rental is invalid. Please re-enter a value of 1 or greater.");
+        }
+
+        if (discount < 0 || discount > 100) {
+            throw new DiscountPercentageRangeException("The discount that was entered is invalid. Please re-enter a value from 0 to 100.");
+        }
+
+        if (chargeableDays < 0) {
+            throw new IllegalArgumentException("Chargeable days must be zero (0) or greater.");
+        }
     }
 
     /**
@@ -108,26 +147,22 @@ public class RentalAgreement {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        // Tool information.
-        sb.append(String.format("Tool code: %s\n", tool.getToolCode()));
-        sb.append(String.format("Tool type: %s\n", tool.getToolType().getName()));
-        sb.append(String.format("Brand: %s\n", tool.getBrandName()));
-
-        // Rental and checkout info.
-        sb.append(String.format("Checkout date: %s\n", checkoutDate.format(DateTimeFormatter.ofPattern("MM/dd/yy"))));
-        sb.append(String.format("Rental duration: %s days\n", rentalDuration));
-        sb.append(String.format("Due date: %s\n", calculateRentalDueDate().format(DateTimeFormatter.ofPattern("MM/dd/yy"))));
-        sb.append(String.format("Daily rental charge: $%s\n", tool.getToolType().getDailyCharge()));
-        sb.append(String.format("Charged days: %s days\n", chargeableDays));
-
-        // Pricing details.
-        sb.append(String.format("Charge before discount: $%s\n", calculatePreDiscountPrice()));
-        sb.append(String.format("Discount rate: %1$s%2$s\n", discount, "%"));
-        sb.append(String.format("Total discount: $%s\n", calculateDiscountAmount()));
-        sb.append(String.format("Final charge: $%s\n", calculateFinalPrice()));
-
-        return sb.toString();
+        return """
+        Tool code: %s
+        Tool type: %s
+        Brand: %s
+        Checkout date: %s
+        Rental duration: %s days
+        Due date: %s
+        Daily rental charge: $%s
+        charged days: %s days
+        Charge before discount: $%s
+        Discount rate: %s%%
+        Total discount: $%s
+        Final charge: $%s
+        """
+        .formatted(tool.getToolCode(), tool.getToolType().getName(), tool.getBrandName(),
+        checkoutDate.format(DATE_TIME_FORMATTER), rentalDuration, rentalDueDate.format(DATE_TIME_FORMATTER),
+        tool.getToolType().getDailyCharge(), chargeableDays, preDiscountPrice, discount, discountAmount, finalPrice);
     }
 }

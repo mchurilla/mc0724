@@ -1,9 +1,11 @@
 package churilla.mark.toolrental.exception;
 
 /**
- * An exception class that is thrown when an invalid number is provided for the discount.
- * This number is a whole number that represents the discount percentage (e.g., 20) and has
- * a valid range of between 0 and 100 inclusive.
+ * Exception thrown when a discount percentage provided is out of the valid range.
+ *
+ * This exception is used to indicate that a discount percentage value does not meet
+ * the expected range of 0 to 100 inclusive. The discount percentage is a whole number
+ * representing the discount to be applied. Valid values are between 0 and 100.
  */
 public class DiscountPercentageRangeException extends RuntimeException {
 

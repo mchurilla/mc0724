@@ -5,13 +5,17 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 
 /**
- * A Utility class for accessing resources like data files, etc.
+ * Utility class for accessing resources such as data files from the classpath.
  */
 public class ResourceUtils {
 
     /**
-     * Returns a file in the src/main/resources directory.
+     * Retrieves a file from the classpath, typically from the `src/main/resources` directory.
+     *
      * If the resource is not found, this method will throw back a {@link FileNotFoundException}.
+     *
+     * @param resourceFilename the name of the resource file to retrieve, relative to the classpath.
+     * @return a {@link File} object representing the resource file.
      */
     public static File getResourceFile(final String resourceFilename) throws FileNotFoundException {
         URL resource = ResourceUtils.class.getClassLoader().getResource(resourceFilename);

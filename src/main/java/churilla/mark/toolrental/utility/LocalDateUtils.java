@@ -5,8 +5,9 @@ import java.time.LocalDate;
 import java.time.Month;
 
 /**
- * The LocalDateUtils class provides static utility methods for dealing with the {@link LocalDate} objects.
- * The functionality currently provides means to determine if a given {@link LocalDate} falls on one of the
+ * Utility class that provides static methods for working with {@link LocalDate} objects.
+ *
+ * The functionality currently offers methods to determine if a given {@link LocalDate} falls on one of the
  * recognized holidays.
  */
 public class LocalDateUtils {

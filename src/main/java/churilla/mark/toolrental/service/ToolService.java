@@ -12,9 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The ToolService is the interface to the rentable tool data contained within the ToolDb.json file.
- * The ToolDb.json file is a stand-in for a document database such as MongoDB and is simulating a collection
- * of rentable tools.
+ * Service class that provides access to and manages rentable tool data.
+ *
+ * The ToolService class acts as an gateway for interacting with the tool data stored in
+ * the `ToolDb.json` file. This file serves as a stand-in for a document database, such as MongoDB,
+ * and simulates a collection of rentable tools.
  */
 public class ToolService {
 

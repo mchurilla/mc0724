@@ -47,15 +47,6 @@ public class Checkout {
                                     final LocalDate checkoutDate,
                                     final int rentalDuration,
                                     final int discount) {
-        // Ensure that the rental duration and discount percentage values are valid.
-        if (rentalDuration < 1) {
-            throw new InvalidRentalDurationException("The duration of the rental is invalid. Please re-enter a value of 1 or greater.");
-        }
-
-        if (discount < 0 || discount > 100) {
-            throw new DiscountPercentageRangeException("The discount that was entered is invalid. Please re-enter a value from 0 to 100.");
-        }
-
         // Get the tool from the map that is being rented.
         RentableTool tool = toolService.getRentableTool(toolCode);
 
@@ -92,7 +83,7 @@ public class Checkout {
 
         // Next check if the tool is free on the weekends or weekdays.
         if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            // Check if the tool is free (not charged) on weekends.
+            // Check if the tool is free on weekends.
             return !toolType.hasWeekendCharge();
         }
         else {
