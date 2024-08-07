@@ -1,12 +1,12 @@
 package churilla.mark.toolrental.logic;
 
 import churilla.mark.toolrental.exception.FatalException;
+import churilla.mark.toolrental.exception.ToolDataInitializationException;
 import churilla.mark.toolrental.model.RentableTool;
 import churilla.mark.toolrental.model.RentalAgreement;
 import churilla.mark.toolrental.model.ToolType;
 import churilla.mark.toolrental.service.ToolService;
 
-import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
@@ -21,12 +21,14 @@ public class Checkout {
     private final ToolService toolService;
 
     /**
-     * Constructor.
+     * Constructor. Creates a {@link ToolService} object, which reads in the tool data. If the service class cannot
+     * read in the tool data for any reason it will throw a {@link ToolDataInitializationException}. If this occurs, the
+     * program will not be able to function properly so a {@link FatalException} is thrown to the caller.
      */
     public Checkout() throws FatalException {
         try {
             toolService = new ToolService();
-        } catch (IOException ex) {
+        } catch (ToolDataInitializationException ex) {
             throw new FatalException("An error occurred while reading the ToolsDb.json file.", ex);
         }
     }
@@ -45,18 +47,12 @@ public class Checkout {
                                     final LocalDate checkoutDate,
                                     final int rentalDuration,
                                     final int discount) {
-        // Get the tool from the map that is being rented.
+        // TODO: Null checks on toolCode and checkoutDate
         RentableTool tool = toolService.getRentableTool(toolCode);
 
-        // Determine how many days of the rental duration will be charged (some tools are not charged on certain days).
-        int chargedDays = rentalDuration;
-        for (int i=1; i<=rentalDuration; i++) {
-            if (isToolFreeForDate(tool.getToolType(), checkoutDate.plusDays(i))) {
-                chargedDays--;
-            }
-        }
+        int chargeableDays = calculateChargeableDays(tool, checkoutDate, rentalDuration);
 
-        return new RentalAgreement(tool, rentalDuration, checkoutDate, chargedDays, discount);
+        return new RentalAgreement(tool, rentalDuration, checkoutDate, chargeableDays, discount);
     }
 
     /**
@@ -88,5 +84,28 @@ public class Checkout {
             // Check if the tool is free on the weekdays.
             return !toolType.hasWeekdayCharge();
         }
+    }
+
+    /**
+     * Calculates the number of days during the rental period that are chargeable.
+     *
+     * @param tool The tool being rented.
+     * @param checkoutDate The date that the tool is being checkedout. The first day of the rental is the day following
+     *                     the checkout date.
+     * @param rentalDuration The number of days that the tool is being rented.
+     *
+     * @return A number in days that the tool will be charged for, taking into account any days that tool is free.
+     */
+    private int calculateChargeableDays(final RentableTool tool, final LocalDate checkoutDate, final int rentalDuration) {
+        // Determine how many days of the rental duration will be charged (some tools are not charged on certain days).
+        // Rental charges start on the day after the checkout date, so skip the checkout date when calculating.
+        int chargeableDays = rentalDuration;
+        for (int i=1; i<=rentalDuration; i++) {
+            if (isToolFreeForDate(tool.getToolType(), checkoutDate.plusDays(i))) {
+                chargeableDays--;
+            }
+        }
+
+        return chargeableDays;
     }
 }

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.Objects;
 
 /**
@@ -34,13 +36,13 @@ public class ToolType {
                     @JsonProperty("hasWeekendCharge") final boolean hasWeekendCharge,
                     @JsonProperty("hasHolidayCharge") final boolean hasHolidayCharge) {
 
+        validateInput(name, dailyCharge);
+
         this.name = name;
-        this.dailyCharge = dailyCharge;
+        this.dailyCharge = dailyCharge.setScale(2, RoundingMode.HALF_UP);
         this.hasWeekdayCharge = hasWeekdayCharge;
         this.hasWeekendCharge = hasWeekendCharge;
         this.hasHolidayCharge = hasHolidayCharge;
-
-        validateInput();
     }
 
     // Getters
@@ -94,7 +96,7 @@ public class ToolType {
      * Validates that all input required by the ToolType class is provided. If any fields are
      * null, then a {@link RequiredFieldNullException} is thrown.
      */
-    private void validateInput() {
+    private void validateInput(final String name, final BigDecimal dailyCharge) {
         if (name == null) {
             throw new RequiredFieldNullException("name");
         }
@@ -108,18 +110,25 @@ public class ToolType {
     //
     @Override
     public String toString() {
+        // Formatter to display the currency values as US dollar strings.
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new java.util.Locale("en", "us"));
+
         return """
                 Name: %s
-                Daily charge: $%s
+                Daily charge: %s
                 Weekday charge: %s
                 Weekend charge: %s
                 Holiday charge: %s
                 """
-                .formatted(name, dailyCharge, hasWeekdayCharge, hasWeekendCharge, hasHolidayCharge);
+                .formatted(name,
+                       currencyFormat.format(dailyCharge),
+                       hasWeekdayCharge,
+                       hasWeekendCharge,
+                       hasHolidayCharge);
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

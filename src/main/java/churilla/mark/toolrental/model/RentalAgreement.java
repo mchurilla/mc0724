@@ -2,17 +2,19 @@ package churilla.mark.toolrental.model;
 
 import churilla.mark.toolrental.exception.DiscountPercentageRangeException;
 import churilla.mark.toolrental.exception.InvalidRentalDurationException;
+import churilla.mark.toolrental.exception.NegativeChargeableDaysException;
 import churilla.mark.toolrental.exception.RequiredFieldNullException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
  * The RentalAgreement class is an immutable class that encapsulates the details of a rental agreement for a tool.
  * It includes information about the rented tool, the duration of the rental, discount rate and the number of
- * chargeable days. This class provides methods to calculate other important values such as the rental due date,
+ * chargeable days. This class calculates other important values such as the rental due date,
  * the total chargeable amount before and after discounts, and the amount discounted.
  */
 public class RentalAgreement {
@@ -29,13 +31,18 @@ public class RentalAgreement {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yy");
 
+    private static final int MIN_DISCOUNT = 0;
+    private static final int MAX_DISCOUNT = 100;
+    private static final int MIN_RENTAL_DURATION = 1;
+    private static final int MIN_CHARGEABLE_DAYS = 0;
+
     /**
      * Constructor for the RentalAgreement class. This class is immutable and all properties of this class
      * are passed into the constructor.
      *
      * @param tool  The {@link RentableTool} that is being rented.
      * @param rentalDuration The duration in days of the rental.
-     * @param checkoutDate  The date that the rental was checked out. The rental starts the day after.
+     * @param checkoutDate  The date that the rental was checked out. The rental charges start the day after.
      * @param chargeableDays  The number of days that the customer will be charged. This number could differ
      *                        from the rental duration since the tool could be free on certain days.
      * @param discount The discount rate (whole number percent) to apply to the final price.
@@ -53,7 +60,8 @@ public class RentalAgreement {
 
         validateInput();
 
-        BigDecimal discountPct = BigDecimal.valueOf(discount).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        BigDecimal discountPct = BigDecimal.valueOf(discount)
+                                           .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
         // Calculate the pre-discount price, the discount amount, and the final price.
         preDiscountPrice = tool.getToolType()
@@ -62,7 +70,7 @@ public class RentalAgreement {
                 .setScale(2, RoundingMode.HALF_UP);
 
         discountAmount = preDiscountPrice.multiply(discountPct)
-                                           .setScale(2, RoundingMode.HALF_UP);
+                                         .setScale(2, RoundingMode.HALF_UP);
 
         finalPrice = preDiscountPrice.subtract(discountAmount)
                                      .setScale(2, RoundingMode.HALF_UP);
@@ -116,8 +124,15 @@ public class RentalAgreement {
     }
 
     /**
-     * Validates the information critical to creating a rental agreement. If any of the input is invalid,
+     * Validates the information critical to creating a rental agreement. If any of the fields are invalid or missing,
      * this makes the entire agreement invalid.
+     *
+     * @throws {@link RequiredFieldNullException} when a required field is null.
+     * @throws {@link InvalidRentalDurationException} when the rental duration is less than one (1) day.
+     * @throws {@link DiscountPercentageRangeException} when the discount percentage value is not in the range 0 - 100.
+     * @throws {@link NegativeChargeableDaysException} when charegable days is less than zero (0). This value is
+     *                                                 calculated, so this exception would indicate an issue with the
+     *                                                 calculation code.
      */
     private void validateInput() {
         if (tool == null) {
@@ -127,16 +142,16 @@ public class RentalAgreement {
             throw new RequiredFieldNullException("checkoutDate");
         }
 
-        if (rentalDuration < 1) {
+        if (rentalDuration < MIN_RENTAL_DURATION) {
             throw new InvalidRentalDurationException("The duration of the rental is invalid. Please re-enter a value of 1 or greater.");
         }
 
-        if (discount < 0 || discount > 100) {
+        if (discount < MIN_DISCOUNT || discount > MAX_DISCOUNT) {
             throw new DiscountPercentageRangeException("The discount that was entered is invalid. Please re-enter a value from 0 to 100.");
         }
 
-        if (chargeableDays < 0) {
-            throw new IllegalArgumentException("Chargeable days must be zero (0) or greater.");
+        if (chargeableDays < MIN_CHARGEABLE_DAYS) {
+            throw new NegativeChargeableDaysException(String.format("Invalid calculation of chargeable days: %s. Must be 0 or greater", chargeableDays));
         }
     }
 
@@ -147,6 +162,9 @@ public class RentalAgreement {
      */
     @Override
     public String toString() {
+        // Formatter to display the currency values as US dollar strings.
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new java.util.Locale("en", "us"));
+
         return """
         Tool code: %s
         Tool type: %s
@@ -154,15 +172,24 @@ public class RentalAgreement {
         Checkout date: %s
         Rental duration: %s days
         Due date: %s
-        Daily rental charge: $%s
+        Daily rental charge: %s
         charged days: %s days
-        Charge before discount: $%s
+        Charge before discount: %s
         Discount rate: %s%%
-        Total discount: $%s
-        Final charge: $%s
+        Total discount: %s
+        Final charge: %s
         """
-        .formatted(tool.getToolCode(), tool.getToolType().getName(), tool.getBrandName(),
-        checkoutDate.format(DATE_TIME_FORMATTER), rentalDuration, rentalDueDate.format(DATE_TIME_FORMATTER),
-        tool.getToolType().getDailyCharge(), chargeableDays, preDiscountPrice, discount, discountAmount, finalPrice);
+        .formatted(tool.getToolCode(),
+                tool.getToolType().getName(),
+                tool.getBrandName(),
+                checkoutDate.format(DATE_TIME_FORMATTER),
+                rentalDuration,
+                rentalDueDate.format(DATE_TIME_FORMATTER),
+                currencyFormat.format(tool.getToolType().getDailyCharge()),
+                chargeableDays,
+                currencyFormat.format(preDiscountPrice),
+                discount,
+                currencyFormat.format(discountAmount),
+                currencyFormat.format(finalPrice));
     }
 }

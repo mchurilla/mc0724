@@ -21,9 +21,9 @@ public class UnknownToolCodeException extends RuntimeException {
      * Constructor that takes a message and source exception.
      *
      * @param message A Message detailing the problem that has occurred.
-     * @param ex The source exception.
+     * @param cause The source exception.
      */
-    public UnknownToolCodeException(final String message, final Exception ex) {
-        super(message, ex);
+    public UnknownToolCodeException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

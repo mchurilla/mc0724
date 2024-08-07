@@ -243,7 +243,7 @@ public class ToolRentalTests {
      * then a {@link RequiredFieldNullException} is thrown.
      */
     @Test
-    void nullRequiredValues_PassedToRentableToolConstructor_ExpectException() {
+    void test_nullRequiredValues_PassedToRentableToolConstructor_ExpectException() {
         ToolType fakeToolType = new ToolType("FAKE", BigDecimal.valueOf(9.99), true, true, true);
 
         assertThrows(

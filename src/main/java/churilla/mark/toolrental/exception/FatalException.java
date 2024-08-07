@@ -26,9 +26,9 @@ public class FatalException extends Exception {
      * Constructor that takes a message and source exception.
      *
      * @param message A Message detailing the problem that has occurred.
-     * @param ex The source exception.
+     * @param cause The source exception.
      */
-    public FatalException(final String message, final Exception ex) {
-        super(message, ex);
+    public FatalException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

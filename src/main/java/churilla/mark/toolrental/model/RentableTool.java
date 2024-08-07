@@ -20,7 +20,7 @@ public class RentableTool {
     /**
      * Serializable / deserializable constructor.
      *
-     * @param toolCode The 4-character code used to uniquely identify the tool.
+     * @param toolCode The code used to uniquely identify the tool.
      * @param toolType {@link ToolType} to specify the type of tool. Used to determine the rental charge.
      * @param brandName The manufacturer / brand name.
      */
@@ -92,7 +92,7 @@ public class RentableTool {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

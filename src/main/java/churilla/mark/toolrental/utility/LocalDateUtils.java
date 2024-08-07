@@ -62,14 +62,11 @@ public class LocalDateUtils {
         // Calculate which day the holiday will be observed on. Start by assuming it will be on the 4th.
         LocalDate observedHolidayDate = LocalDate.of(date.getYear(), 7, 4);
 
-        if (observedHolidayDate.getDayOfWeek() == DayOfWeek.SATURDAY ||
-                observedHolidayDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            // If it falls on Saturday, subtract a day and set it to Friday
-            // If it falls on Sunday, add a day to set to Monday.
-            switch(observedHolidayDate.getDayOfWeek()) {
-                case SATURDAY -> observedHolidayDate = observedHolidayDate.minusDays(1);
-                case SUNDAY ->  observedHolidayDate = observedHolidayDate.plusDays(1);
-            }
+        // If it falls on Saturday, subtract a day and set it to Friday
+        // If it falls on Sunday, add a day to set to Monday.
+        switch(observedHolidayDate.getDayOfWeek()) {
+            case SATURDAY -> observedHolidayDate = observedHolidayDate.minusDays(1);
+            case SUNDAY ->  observedHolidayDate = observedHolidayDate.plusDays(1);
         }
 
         // Check if the date passed in falls on the observed holiday date.
