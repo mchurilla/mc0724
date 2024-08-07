@@ -1,16 +1,13 @@
 package churilla.mark.toolrental.service;
 
-import churilla.mark.toolrental.exception.ToolDataInitializationException;
 import churilla.mark.toolrental.exception.UnknownToolCodeException;
 import churilla.mark.toolrental.model.RentableTool;
-import churilla.mark.toolrental.utility.ResourceUtils;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import churilla.mark.toolrental.repository.ToolRepository;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Service class that provides access to and manages rentable tool data.
@@ -25,6 +22,8 @@ public class ToolService {
     // Internally used HashMap to store the rentable tool instances that are read in from the ToolDb.json file.
     private final Map<String, RentableTool> rentableToolMap = new HashMap<>();
 
+    private final ToolRepository toolRepo;
+
     /**
      * Constructor. Reads the values from the ToolDb.json file initializes the tool map using the tool codes as keys.
      *
@@ -33,18 +32,7 @@ public class ToolService {
      *                     in a partially constructed state. The caller should handle the error appropriately.
      */
     public ToolService() {
-        // JSON serializer / deserializer.
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            java.io.File resourceFile = ResourceUtils.getResourceFile("ToolDb.json");
-            List<RentableTool> rentableToolList = mapper.readValue(resourceFile, new TypeReference<>() {});
-
-            // Cycle through the list of tools and add each on to the map, using the tool code as the key.
-            rentableToolList.forEach(tool -> rentableToolMap.putIfAbsent(tool.getToolCode(), tool));
-        } catch (IOException ex) {
-            throw new ToolDataInitializationException("", ex);
-        }
+        this.toolRepo = new ToolRepository();
     }
 
     /**
@@ -54,12 +42,7 @@ public class ToolService {
      *                 a {@link UnknownToolCodeException} is thrown.
      * @return The {@link RentableTool} corresponding to the tool code provided.
      */
-    public RentableTool getRentableTool(final String toolCode) {
-        // Throw an UnknownToolCodeException if the code supplied is not in the HashMap.
-        if (!rentableToolMap.containsKey(toolCode)) {
-            throw new UnknownToolCodeException(String.format("An unknown tool code \"%s\". Please check the tool code and try again.", toolCode));
-        }
-
-        return rentableToolMap.get(toolCode);
+    public Optional<RentableTool> getRentableTool(final String toolCode) {
+        return toolRepo.getRentableToolByCode(toolCode);
     }
 }

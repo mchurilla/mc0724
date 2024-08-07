@@ -1,7 +1,7 @@
 package churilla.mark.toolrental.tests;
 
 import churilla.mark.toolrental.exception.*;
-import churilla.mark.toolrental.logic.Checkout;
+import churilla.mark.toolrental.logic.RentalProcessor;
 import churilla.mark.toolrental.model.RentableTool;
 import churilla.mark.toolrental.model.RentalAgreement;
 import churilla.mark.toolrental.model.ToolType;
@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ToolRentalTests {
-    private Checkout checkout;
+    private RentalProcessor rentalProcessor;
 
     @BeforeAll
     void setup() {
         try {
-            checkout = new Checkout();
+            rentalProcessor = new RentalProcessor();
         } catch (FatalException ex) {
-            throw new RuntimeException("An error occurred when initializing Checkout object", ex);
+            throw new RuntimeException("An error occurred when initializing RentalProcessor object", ex);
         }
     }
 
@@ -43,10 +43,10 @@ public class ToolRentalTests {
      *  This test expects the checkout() method to throw a {@link DiscountPercentageRangeException}.
      */
     @Test
-    void test1_JAKR_InvalidDiscount_ExpectException() {
+    void test1_givenToolCodeJAKR_whenInvalidDiscount_thenExpectException() {
         assertThrows(
             DiscountPercentageRangeException.class,
-            () -> checkout.checkout("JAKR", LocalDate.of(2015, 9, 3), 5, 101),
+            () -> rentalProcessor.checkout("JAKR", LocalDate.of(2015, 9, 3), 5, 101),
             "Expected checkout() to throw DiscountPercentageRangeException, but it did not."
         );
     }
@@ -64,8 +64,8 @@ public class ToolRentalTests {
      *  The discount is set at 10%, or $0.40 giving a final charge of $3.58.
      */
     @Test
-    void test2_LADW_ExpectCorrectAmount() {
-        RentalAgreement ra = checkout.checkout("LADW", LocalDate.of(2020, 7, 2), 3, 10);
+    void test2_givenToolCodeLADW_whenOccurringDuringJuly4th_thenExpectCorrectAmount() {
+        RentalAgreement ra = rentalProcessor.checkout("LADW", LocalDate.of(2020, 7, 2), 3, 10);
 
         assertEquals(2, ra.getChargeableDays());
         assertEquals(BigDecimal.valueOf(0.40).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
@@ -90,8 +90,8 @@ public class ToolRentalTests {
      *  final price of $3.35.
      */
     @Test
-    void test3_CHNS_ExpectCorrectAmount() {
-        RentalAgreement ra = checkout.checkout("CHNS", LocalDate.of(2015, 7, 2), 5, 25);
+    void test3_givenToolCodeCHNS_whenOccurringDuringJuly4th_thenExpectCorrectAmount() {
+        RentalAgreement ra = rentalProcessor.checkout("CHNS", LocalDate.of(2015, 7, 2), 5, 25);
 
         assertEquals(3, ra.getChargeableDays());
         assertEquals(BigDecimal.valueOf(1.12).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
@@ -115,8 +115,8 @@ public class ToolRentalTests {
      *  The pre-discount price is $8.97 with no discount being applied therefore $8.97 is the final price.
      */
     @Test
-    void test4_JAKD_ExpectCorrectAmount() {
-        RentalAgreement ra = checkout.checkout("JAKD", LocalDate.of(2015, 9, 3), 6, 0);
+    void test4_giveToolCodeJAKD_whenOccurringOnLaborDay_thenExpectCorrectAmount() {
+        RentalAgreement ra = rentalProcessor.checkout("JAKD", LocalDate.of(2015, 9, 3), 6, 0);
 
         assertEquals(3, ra.getChargeableDays());
         assertEquals(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
@@ -140,8 +140,8 @@ public class ToolRentalTests {
      *  The pre-discount price is $14.95, with no discount being applied making $14.95 the final price.
      */
     @Test
-    void test5_JAKR_ExpectCorrectAmount() {
-        RentalAgreement ra = checkout.checkout("JAKR", LocalDate.of(2015, 7, 2), 9, 0);
+    void test5_givenToolCodeJAKR_whenOccurringDuringJuly4th_thenExpectCorrectAmount() {
+        RentalAgreement ra = rentalProcessor.checkout("JAKR", LocalDate.of(2015, 7, 2), 9, 0);
 
         assertEquals(5, ra.getChargeableDays());
         assertEquals(BigDecimal.valueOf(0.00).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
@@ -166,8 +166,8 @@ public class ToolRentalTests {
      *  The final price after discount is $1.49.
      */
     @Test
-    void test6_JAKR_ExpectCorrectAmount() {
-        RentalAgreement ra = checkout.checkout("JAKR", LocalDate.of(2020, 7, 2), 4, 50);
+    void test6_givenToolCodeJAKR_whenOccurringDuringJuly4th_thenExpectCorrectAmount() {
+        RentalAgreement ra = rentalProcessor.checkout("JAKR", LocalDate.of(2020, 7, 2), 4, 50);
 
         assertEquals(1, ra.getChargeableDays());
         assertEquals(BigDecimal.valueOf(1.50).setScale(2, RoundingMode.HALF_UP), ra.getDiscountAmount());
@@ -187,10 +187,10 @@ public class ToolRentalTests {
      * then a {@link InvalidRentalDurationException} is thrown.
      */
     @Test
-    void test_RentalDurationLessThanZero_ExpectToThrow_InvalidRentalDurationException() {
+    void giveRentalDurationLessThanZero_whenCheckingOut_thenExpectToThrow_InvalidRentalDurationException() {
        assertThrows(
                InvalidRentalDurationException.class,
-               () -> checkout.checkout("CHNS", LocalDate.of(2020, 7, 2), -1, 25),
+               () -> rentalProcessor.checkout("CHNS", LocalDate.of(2020, 7, 2), -1, 25),
                "Expected InvalidRentalDurationException to be thrown but it wasn't."
        );
     }
@@ -199,10 +199,10 @@ public class ToolRentalTests {
      * Tests that when a rental duration of zero is entered, then a {@link InvalidRentalDurationException} is thrown.
      */
     @Test
-    void test_RentalDurationIsZero_ExpectToThrow_InvalidRentalDurationException() {
+    void givenRentalDurationIsZero_whenCheckingOut_thenExpectToThrow_InvalidRentalDurationException() {
         assertThrows(
                 InvalidRentalDurationException.class,
-                () -> checkout.checkout("CHNS", LocalDate.of(2020, 7, 2), 0, 25),
+                () -> rentalProcessor.checkout("CHNS", LocalDate.of(2020, 7, 2), 0, 25),
                 "Expected InvalidRentalDurationException to be thrown but it wasn't."
         );
     }
@@ -211,10 +211,10 @@ public class ToolRentalTests {
      * Tests that when an unknown tool code is entered, then a {@link UnknownToolCodeException} is thrown.
      */
     @Test
-    void test_UnknownToolCodeEntered_ExpectToThrow_UnknownToolCodeException() {
+    void givenUnknownToolCodeEntered_whenCheckingOut_thenExpectToThrow_UnknownToolCodeException() {
         assertThrows(
                 UnknownToolCodeException.class,
-                () -> checkout.checkout("BOBC", LocalDate.of(2020, 7, 2), 15, 25),
+                () -> rentalProcessor.checkout("BOBC", LocalDate.of(2020, 7, 2), 15, 25),
                 "Expected UnknownToolCodeException to be thrown but it wasn't."
         );
     }
@@ -223,10 +223,10 @@ public class ToolRentalTests {
      * Tests that when the toolCode passed into checkout() is null, then a {@link RequiredFieldNullException} is thrown.
      */
     @Test
-    void test_nullToolCode_ExpectToThrow_RequiredFieldNullException() {
+    void givenNullToolCode_whenCheckingOut_thenExpectToThrow_RequiredFieldNullException() {
         assertThrows(
                 RequiredFieldNullException.class,
-                () -> checkout.checkout(null, LocalDate.of(2020,1, 1), 0, 0)
+                () -> rentalProcessor.checkout(null, LocalDate.of(2020,1, 1), 0, 0)
         );
     }
 
@@ -235,10 +235,10 @@ public class ToolRentalTests {
      * is thrown.
      */
     @Test
-    void test_nullCheckoutDate_ExpectToThrow_RequiredFieldNullException() {
+    void givenNullCheckoutDate_whenCheckingOut_thenExpectToThrow_RequiredFieldNullException() {
         assertThrows(
                 RequiredFieldNullException.class,
-                () -> checkout.checkout("FAKE", null, 0, 0)
+                () -> rentalProcessor.checkout("FAKE", null, 0, 0)
         );
     }
 
@@ -247,7 +247,7 @@ public class ToolRentalTests {
      * then a {@link RequiredFieldNullException} is thrown.
      */
     @Test
-    void test_nullRequiredValues_PassedToToolTypeConstructor_ExpectException() {
+    void givenNullRequiredValues_whenPassedToToolTypeConstructor_thenExpectToThrow_RequiredFieldNullException() {
         assertThrows(
                 RequiredFieldNullException.class,
                 () -> new ToolType(null, BigDecimal.valueOf(9.99), true, true, true),
@@ -266,7 +266,7 @@ public class ToolRentalTests {
      * then a {@link RequiredFieldNullException} is thrown.
      */
     @Test
-    void test_nullRequiredValues_PassedToRentableToolConstructor_ExpectException() {
+    void givenNullRequiredValues_whenPassedToRentableToolConstructor_thenExpectToThrow_RequiredFieldNullException() {
         ToolType fakeToolType = new ToolType("FAKE", BigDecimal.valueOf(9.99), true, true, true);
 
         assertThrows(
@@ -293,7 +293,7 @@ public class ToolRentalTests {
      * fields, that a {@link RequiredFieldNullException} is thrown.
      */
     @Test
-    void test_nullRequiredValues_PassedToRentalAgreementConstructor_ExpectExceptions() {
+    void givenNullRequiredValues_whenPassedToRentalAgreementConstructor_thenExpectToThrow_RequiredFieldNullException() {
         assertThrows(
                 RequiredFieldNullException.class,
                 () -> new RentalAgreement(null, 5, LocalDate.of(2020, 7, 2), 0, 0),
@@ -308,6 +308,4 @@ public class ToolRentalTests {
                 "Expected RequiredFieldNullException to be thrown when checkout date is null, but it wasn't."
         );
     }
-
-
 }

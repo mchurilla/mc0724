@@ -2,6 +2,7 @@ package churilla.mark.toolrental.logic;
 
 import churilla.mark.toolrental.exception.FatalException;
 import churilla.mark.toolrental.exception.ToolDataInitializationException;
+import churilla.mark.toolrental.exception.UnknownToolCodeException;
 import churilla.mark.toolrental.model.RentableTool;
 import churilla.mark.toolrental.model.RentalAgreement;
 import churilla.mark.toolrental.model.ToolType;
@@ -14,11 +15,11 @@ import java.time.LocalDate;
 import static churilla.mark.toolrental.utility.LocalDateUtils.isHoliday;
 
 /**
- * The Checkout class handles the process of renting tools and creating rental agreements.
+ * The RentalProcessor class handles the process of renting tools and creating rental agreements.
  * It provides functionality to generate a {@link RentalAgreement} based on the tool selected, the rental duration,
  * rental period, and any applicable discounts.
  */
-public class Checkout {
+public class RentalProcessor {
     private final ToolService toolService;
 
     /**
@@ -26,7 +27,7 @@ public class Checkout {
      * read in the tool data for any reason it will throw a {@link ToolDataInitializationException}. If this occurs, the
      * program will not be able to function properly so a {@link FatalException} is thrown to the caller.
      */
-    public Checkout() throws FatalException {
+    public RentalProcessor() throws FatalException {
         try {
             toolService = new ToolService();
         } catch (ToolDataInitializationException ex) {
@@ -51,7 +52,8 @@ public class Checkout {
         ValidationUtils.requireNonNull(toolCode, "toolCode");
         ValidationUtils.requireNonNull(checkoutDate, "checkoutDate");
 
-        RentableTool tool = toolService.getRentableTool(toolCode);
+        RentableTool tool = toolService.getRentableTool(toolCode)
+                .orElseThrow(() -> new UnknownToolCodeException(String.format("Tool code \"%s\" not found.", toolCode)));
 
         int chargeableDays = calculateChargeableDays(tool, checkoutDate, rentalDuration);
 

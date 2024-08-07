@@ -11,52 +11,52 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class LocalDateUtilsTests {
 
     @Test
-    void test_FirstMondayInSept_isLaborDayHoliday_ReturnsTrue() {
+    void givenFirstMondayInSept_whenCheckingForLaborDayHoliday_thenReturnsTrue() {
         assertTrue(LocalDateUtils.isLaborDayHoliday(LocalDate.of(2015, 9, 7)));
     }
 
     @Test
-    void test_NotFirstMondayInSept_isLaborDayHoliday_ReturnsFalse() {
+    void givenSecondMondayInSept_whenCheckingForLaborDayHoliday_ReturnsFalse() {
         assertFalse(LocalDateUtils.isLaborDayHoliday(LocalDate.of(2015, 9, 14)));
     }
 
     @Test
-    void test_NotMondayInSept_isLaborDayHoliday_ReturnsFalse() {
+    void givenNonMondayInSept_whenCheckingForLabordayHoliday_ReturnsFalse() {
         assertFalse(LocalDateUtils.isLaborDayHoliday(LocalDate.of(2015, 9, 4)));
     }
 
     @Test
-    void test_July4thOnSaturday_GivenJuly3rd_isIndependenceDayHoliday_ReturnsTrue() {
+    void givenJuly3rd_whenJuly4thIsOnSaturday_thenReturnsTrue() {
         assertTrue(LocalDateUtils.isIndependenceDayHoliday(LocalDate.of(2015, 7, 3)));
     }
 
     @Test
-    void test_July4thOnSunday_GivenJuly5th_isIndependenceDayHoliday_ReturnsTrue() {
+    void givenJuly5th_whenJuly4thISOnSunday_thenReturnsTrue() {
         assertTrue(LocalDateUtils.isIndependenceDayHoliday(LocalDate.of(2021, 7, 5)));
     }
 
     @Test
-    void test_July4thOnWeekday_GivenJuly4th_isIndependenceDayHoliday_ReturnsTrue() {
+    void givenJuly4th_whenJuly4thIsOnAWeekday_thenReturnsTrue() {
         assertTrue(LocalDateUtils.isIndependenceDayHoliday(LocalDate.of(2016, 7, 4)));
     }
 
     @Test
-    void test_GivenNonJuly4thDate_isIndependenceDayHoliday_ReturnsFalse() {
+    void givenNonJuly4thDate_thenReturnsFalse() {
         assertFalse(LocalDateUtils.isIndependenceDayHoliday(LocalDate.of(2015, 7, 9)));
     }
 
     @Test
-    void test_GivenJuly4thHoliday_isHoliday_ReturnsTrue() {
+    void givenJuly4thHoliday_whenCheckingForAllHolidays_thenReturnsTrue() {
         assertTrue(LocalDateUtils.isHoliday(LocalDate.of(2015, 7, 3)));
     }
 
     @Test
-    void test_GivenLaborDayHoliday_isHoliday_ReturnsTrue() {
+    void givenLaborDayHoliday_whenCheckingForAllHolidays_thenReturnsTrue() {
         assertTrue(LocalDateUtils.isHoliday(LocalDate.of(2015, 9, 7)));
     }
 
     @Test
-    void test_GivenNoHoliday_isHoliday_ReturnsFalse() {
+    void givenNonHolidayDate_whenCheckingForAllHolidays_thenReturnsFalse() {
         assertFalse(LocalDateUtils.isHoliday(LocalDate.of(2015, 3, 15)));
     }
 }

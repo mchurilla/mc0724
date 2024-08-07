@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ValidationUtilsTests {
     @Test
-    void test_requireNonNull_GivenNull_ThrowsException() {
+    void givenNullValue_whenNonNullIsRequired_thenThrows_RequiredFieldNullException() {
       ToolType type = null;
 
       assertThrows(
@@ -21,7 +21,7 @@ public class ValidationUtilsTests {
     }
 
     @Test
-    void test_requireNonNull_GivenNonNull_ExpectObjectReturned() {
+    void givenNonNullObject_whenNonNullIsRequired_thenSameObjectIsReturned() {
       ToolType fakeToolType = new ToolType("FAKE", BigDecimal.valueOf(1.99), true, false, true);
 
       ToolType testToolType = ValidationUtils.requireNonNull(fakeToolType, "FAKE");
