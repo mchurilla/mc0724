@@ -1,6 +1,6 @@
 package churilla.mark.toolrental.model;
 
-import churilla.mark.toolrental.exception.RequiredFieldNullException;
+import churilla.mark.toolrental.utility.ValidationUtils;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -36,10 +36,8 @@ public class ToolType {
                     @JsonProperty("hasWeekendCharge") final boolean hasWeekendCharge,
                     @JsonProperty("hasHolidayCharge") final boolean hasHolidayCharge) {
 
-        validateInput(name, dailyCharge);
-
-        this.name = name;
-        this.dailyCharge = dailyCharge.setScale(2, RoundingMode.HALF_UP);
+        this.name = ValidationUtils.requireNonNull(name, "name");
+        this.dailyCharge = ValidationUtils.requireNonNull(dailyCharge, "dailyCharge").setScale(2, RoundingMode.HALF_UP);
         this.hasWeekdayCharge = hasWeekdayCharge;
         this.hasWeekendCharge = hasWeekendCharge;
         this.hasHolidayCharge = hasHolidayCharge;
@@ -90,19 +88,6 @@ public class ToolType {
      */
     public boolean hasHolidayCharge() {
         return hasHolidayCharge;
-    }
-
-    /**
-     * Validates that all input required by the ToolType class is provided. If any fields are
-     * null, then a {@link RequiredFieldNullException} is thrown.
-     */
-    private void validateInput(final String name, final BigDecimal dailyCharge) {
-        if (name == null) {
-            throw new RequiredFieldNullException("name");
-        }
-        if (dailyCharge == null) {
-            throw new RequiredFieldNullException("dailyCharge");
-        }
     }
 
     //

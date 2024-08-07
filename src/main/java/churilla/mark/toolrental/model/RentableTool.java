@@ -1,6 +1,6 @@
 package churilla.mark.toolrental.model;
 
-import churilla.mark.toolrental.exception.RequiredFieldNullException;
+import churilla.mark.toolrental.utility.ValidationUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
@@ -27,12 +27,9 @@ public class RentableTool {
     public RentableTool(@JsonProperty("toolCode") final String toolCode,
                         @JsonProperty("toolType") final ToolType toolType,
                         @JsonProperty("brandName") final String brandName) {
-
-        this.toolCode = toolCode;
-        this.toolType = toolType;
-        this.brandName = brandName;
-
-        validateInput();
+        this.toolCode = ValidationUtils.requireNonNull(toolCode, "toolCode");
+        this.toolType = ValidationUtils.requireNonNull(toolType, "toolType");
+        this.brandName = ValidationUtils.requireNonNull(brandName, "brandName");
     }
 
     /**
@@ -60,22 +57,6 @@ public class RentableTool {
      */
     public String getBrandName() {
         return brandName;
-    }
-
-    /**
-     * Validates that all input required by the RentableTool class is provided. If any fields are
-     * null, then a {@link RequiredFieldNullException} is thrown.
-     */
-    private void validateInput() {
-        if (toolCode == null) {
-            throw new RequiredFieldNullException("toolCode");
-        }
-        if (toolType == null)  {
-            throw new RequiredFieldNullException("toolType");
-        }
-        if (brandName == null) {
-            throw new RequiredFieldNullException("brandName");
-        }
     }
 
     //

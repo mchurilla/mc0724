@@ -3,7 +3,7 @@ package churilla.mark.toolrental.model;
 import churilla.mark.toolrental.exception.DiscountPercentageRangeException;
 import churilla.mark.toolrental.exception.InvalidRentalDurationException;
 import churilla.mark.toolrental.exception.NegativeChargeableDaysException;
-import churilla.mark.toolrental.exception.RequiredFieldNullException;
+import churilla.mark.toolrental.utility.ValidationUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -52,13 +52,24 @@ public class RentalAgreement {
                            final LocalDate checkoutDate,
                            final int chargeableDays,
                            final int discount) {
-        this.tool = tool;
+        this.tool = ValidationUtils.requireNonNull(tool, "tool");
+        this.checkoutDate = ValidationUtils.requireNonNull(checkoutDate, "checkoutDate");
+
+        if (rentalDuration < MIN_RENTAL_DURATION) {
+            throw new InvalidRentalDurationException("The duration of the rental is invalid. Please re-enter a value of 1 or greater.");
+        }
+
+        if (discount < MIN_DISCOUNT || discount > MAX_DISCOUNT) {
+            throw new DiscountPercentageRangeException("The discount that was entered is invalid. Please re-enter a value from 0 to 100.");
+        }
+
+        if (chargeableDays < MIN_CHARGEABLE_DAYS) {
+            throw new NegativeChargeableDaysException(String.format("Invalid calculation of chargeable days: %s. Must be 0 or greater", chargeableDays));
+        }
+
         this.rentalDuration = rentalDuration;
-        this.checkoutDate = checkoutDate;
         this.chargeableDays = chargeableDays;
         this.discount = discount;
-
-        validateInput();
 
         BigDecimal discountPct = BigDecimal.valueOf(discount)
                                            .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
@@ -121,38 +132,6 @@ public class RentalAgreement {
      */
     public LocalDate getRentalDueDate() {
         return rentalDueDate;
-    }
-
-    /**
-     * Validates the information critical to creating a rental agreement. If any of the fields are invalid or missing,
-     * this makes the entire agreement invalid.
-     *
-     * @throws {@link RequiredFieldNullException} when a required field is null.
-     * @throws {@link InvalidRentalDurationException} when the rental duration is less than one (1) day.
-     * @throws {@link DiscountPercentageRangeException} when the discount percentage value is not in the range 0 - 100.
-     * @throws {@link NegativeChargeableDaysException} when charegable days is less than zero (0). This value is
-     *                                                 calculated, so this exception would indicate an issue with the
-     *                                                 calculation code.
-     */
-    private void validateInput() {
-        if (tool == null) {
-            throw new RequiredFieldNullException("tool");
-        }
-        if (checkoutDate == null) {
-            throw new RequiredFieldNullException("checkoutDate");
-        }
-
-        if (rentalDuration < MIN_RENTAL_DURATION) {
-            throw new InvalidRentalDurationException("The duration of the rental is invalid. Please re-enter a value of 1 or greater.");
-        }
-
-        if (discount < MIN_DISCOUNT || discount > MAX_DISCOUNT) {
-            throw new DiscountPercentageRangeException("The discount that was entered is invalid. Please re-enter a value from 0 to 100.");
-        }
-
-        if (chargeableDays < MIN_CHARGEABLE_DAYS) {
-            throw new NegativeChargeableDaysException(String.format("Invalid calculation of chargeable days: %s. Must be 0 or greater", chargeableDays));
-        }
     }
 
     /**

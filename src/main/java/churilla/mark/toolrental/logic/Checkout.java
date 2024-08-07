@@ -6,6 +6,7 @@ import churilla.mark.toolrental.model.RentableTool;
 import churilla.mark.toolrental.model.RentalAgreement;
 import churilla.mark.toolrental.model.ToolType;
 import churilla.mark.toolrental.service.ToolService;
+import churilla.mark.toolrental.utility.ValidationUtils;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -47,7 +48,9 @@ public class Checkout {
                                     final LocalDate checkoutDate,
                                     final int rentalDuration,
                                     final int discount) {
-        // TODO: Null checks on toolCode and checkoutDate
+        ValidationUtils.requireNonNull(toolCode, "toolCode");
+        ValidationUtils.requireNonNull(checkoutDate, "checkoutDate");
+
         RentableTool tool = toolService.getRentableTool(toolCode);
 
         int chargeableDays = calculateChargeableDays(tool, checkoutDate, rentalDuration);

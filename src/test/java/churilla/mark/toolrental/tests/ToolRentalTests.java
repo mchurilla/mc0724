@@ -220,6 +220,29 @@ public class ToolRentalTests {
     }
 
     /**
+     * Tests that when the toolCode passed into checkout() is null, then a {@link RequiredFieldNullException} is thrown.
+     */
+    @Test
+    void test_nullToolCode_ExpectToThrow_RequiredFieldNullException() {
+        assertThrows(
+                RequiredFieldNullException.class,
+                () -> checkout.checkout(null, LocalDate.of(2020,1, 1), 0, 0)
+        );
+    }
+
+    /**
+     * Tests that when the checkoutDate passed into checkout() is null, then a {@link RequiredFieldNullException}
+     * is thrown.
+     */
+    @Test
+    void test_nullCheckoutDate_ExpectToThrow_RequiredFieldNullException() {
+        assertThrows(
+                RequiredFieldNullException.class,
+                () -> checkout.checkout("FAKE", null, 0, 0)
+        );
+    }
+
+    /**
      * Tests that when either the name or daily charge values passed to the {@link ToolType} constructor are null,
      * then a {@link RequiredFieldNullException} is thrown.
      */
@@ -285,4 +308,6 @@ public class ToolRentalTests {
                 "Expected RequiredFieldNullException to be thrown when checkout date is null, but it wasn't."
         );
     }
+
+
 }
