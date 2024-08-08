@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ToolRentalTests {
+public class RentalProcessorTests {
     private RentalProcessor rentalProcessor;
 
     @BeforeAll
