@@ -30,6 +30,7 @@ public class RentalAgreement {
     private final BigDecimal finalPrice;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yy");
+    private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new java.util.Locale("en", "us"));
     private static final int MIN_DISCOUNT = 0;
     private static final int MAX_DISCOUNT = 100;
     private static final int MIN_RENTAL_DURATION = 1;
@@ -140,9 +141,6 @@ public class RentalAgreement {
      */
     @Override
     public String toString() {
-        // Formatter to display the currency values as US dollar strings.
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new java.util.Locale("en", "us"));
-
         return """
         Tool code: %s
         Tool type: %s
@@ -163,11 +161,11 @@ public class RentalAgreement {
                 checkoutDate.format(DATE_TIME_FORMATTER),
                 rentalDuration,
                 rentalDueDate.format(DATE_TIME_FORMATTER),
-                currencyFormat.format(tool.getToolType().getDailyCharge()),
+                CURRENCY_FORMAT.format(tool.getToolType().getDailyCharge()),
                 chargeableDays,
-                currencyFormat.format(preDiscountPrice),
+                CURRENCY_FORMAT.format(preDiscountPrice),
                 discount,
-                currencyFormat.format(discountAmount),
-                currencyFormat.format(finalPrice));
+                CURRENCY_FORMAT.format(discountAmount),
+                CURRENCY_FORMAT.format(finalPrice));
     }
 }

@@ -22,6 +22,7 @@ public class ToolType {
 
     // Formatter to display the currency values as US dollar strings.
     private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new java.util.Locale("en", "us"));
+
     /**
      * Serializable / deserializable constructor.
      *
@@ -45,7 +46,9 @@ public class ToolType {
         this.hasHolidayCharge = hasHolidayCharge;
     }
 
+    //
     // Getters
+    //
 
     /**
      * Gets the name of the tool type (i.e., Chainsaw)

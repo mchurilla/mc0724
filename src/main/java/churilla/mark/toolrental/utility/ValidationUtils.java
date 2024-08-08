@@ -23,7 +23,7 @@ public class ValidationUtils {
      * @param <T> The type of the object being validated.
      *
      * @return The validated object, if it is not null.
-     * @throws {@link RequiredFieldNullException} if the object is null.
+     * @throws RequiredFieldNullException if the object is null.
      */
     public static <T> T requireNonNull(T object, String fieldName) {
         if (object == null) {

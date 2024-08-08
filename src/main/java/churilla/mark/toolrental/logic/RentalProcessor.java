@@ -27,7 +27,7 @@ public class RentalProcessor {
      * read in the tool data for any reason it will throw a {@link ToolDataInitializationException}. If this occurs, the
      * program will not be able to function properly so a {@link FatalException} is thrown to the caller.
      *
-     * @throws {@link FatalException} if the tool service cannot be instantiated.
+     * @throws FatalException if the tool service cannot be instantiated.
      */
     public RentalProcessor() throws FatalException {
         try {

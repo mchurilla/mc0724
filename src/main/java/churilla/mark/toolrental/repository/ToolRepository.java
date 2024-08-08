@@ -8,10 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Repository class that handles reading the ToolDb.json file and internally storing the values for lookup.
@@ -19,7 +19,7 @@ import java.util.Optional;
 public class ToolRepository {
 
     // Internally used HashMap to store the rentable tool instances that are read in from the ToolDb.json file.
-    private final Map<String, RentableTool> rentableToolMap = new HashMap<>();
+    private final Map<String, RentableTool> rentableToolMap = new ConcurrentHashMap<>();
 
     /**
      * Constructor that attempts to read the values from the ToolDb.json list and place them into
