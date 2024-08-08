@@ -38,7 +38,7 @@ public class ToolRepository {
             // Cycle through the list of tools and add each on to the map, using the tool code as the key.
             rentableToolList.forEach(tool -> rentableToolMap.putIfAbsent(tool.getToolCode(), tool));
         } catch (IOException ex) {
-            throw new ToolDataInitializationException("ToolDb.json file not found.", ex);
+            throw new ToolDataInitializationException("Failed to initialize tool data from ToolDb.json.", ex);
         }
     }
 

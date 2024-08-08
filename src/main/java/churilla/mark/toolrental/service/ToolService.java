@@ -1,12 +1,9 @@
 package churilla.mark.toolrental.service;
 
-import churilla.mark.toolrental.exception.UnknownToolCodeException;
+import churilla.mark.toolrental.exception.ToolDataInitializationException;
 import churilla.mark.toolrental.model.RentableTool;
 import churilla.mark.toolrental.repository.ToolRepository;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -18,18 +15,14 @@ import java.util.Optional;
  * </p>
  */
 public class ToolService {
-
-    // Internally used HashMap to store the rentable tool instances that are read in from the ToolDb.json file.
-    private final Map<String, RentableTool> rentableToolMap = new HashMap<>();
-
     private final ToolRepository toolRepo;
 
     /**
      * Constructor. Reads the values from the ToolDb.json file initializes the tool map using the tool codes as keys.
-     *
-     * @throws IOException In the event that the ToolsDb.json file cannot be read, or is not present, then an
-     *                     IOException will be throw back to the caller. This ensures that the service is not
-     *                     in a partially constructed state. The caller should handle the error appropriately.
+     * <p>
+     * In the event that the {@link ToolRepository} cannot be instantiated, then the constructor will bubble
+     * up a {@link ToolDataInitializationException} to the caller.
+     * </p>
      */
     public ToolService() {
         this.toolRepo = new ToolRepository();
@@ -37,10 +30,14 @@ public class ToolService {
 
     /**
      * Retrieves a {@link RentableTool} object corresponding to the specified tool code.
+     * <p>
+     * Returns an Optional containing the {@link RentableTool} if found. An empty Optional is returned
+     * when no tool with the given tool code exists in the repository.
+     * </p>
      *
-     * @param toolCode The unique code of the tool to retrieve. If the code does not exist in the map,
-     *                 a {@link UnknownToolCodeException} is thrown.
-     * @return The {@link RentableTool} corresponding to the tool code provided.
+     * @param toolCode The unique code of the tool to retrieve. If the tool code does not exist in the repository,
+     *                 an empty Option is returned.
+     * @return An Optional containing the {@link RentableTool} if found by the repository, or empty otherwise.
      */
     public Optional<RentableTool> getRentableTool(final String toolCode) {
         return toolRepo.getRentableToolByCode(toolCode);

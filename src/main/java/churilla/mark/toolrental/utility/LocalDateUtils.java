@@ -1,5 +1,7 @@
 package churilla.mark.toolrental.utility;
 
+import churilla.mark.toolrental.exception.RequiredFieldNullException;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
@@ -21,6 +23,10 @@ public class LocalDateUtils {
      * @return True if it falls on a holiday, false otherwise.
      */
     public static boolean isHoliday(final LocalDate date) {
+        if (date == null) {
+            throw new RequiredFieldNullException("date", "The date parameter in isHoliday() must not be null");
+        }
+
         return (isLaborDayHoliday(date) || isIndependenceDayHoliday(date));
     }
 
@@ -32,6 +38,10 @@ public class LocalDateUtils {
      * @return True if the date falls on the first Monday of September, false otherwise.
      */
     public static boolean isLaborDayHoliday(final LocalDate date) {
+        if (date == null) {
+            throw new RequiredFieldNullException("date", "The date parameter in isLaborDayHoliday() must not be null");
+        }
+
         // If the date is not in September, or if it is not a Monday,
         // then it cannot be Labor Day.
         if (date.getMonth() != Month.SEPTEMBER ||
@@ -54,6 +64,10 @@ public class LocalDateUtils {
      * @return True if the date falls on the observed holiday date, false otherwise.
      */
     public static boolean isIndependenceDayHoliday(final LocalDate date) {
+        if (date == null) {
+            throw new RequiredFieldNullException("date", "The date parameter in isIndependenceDayHoliday() must not be null");
+        }
+
         // If the July 4th holiday has already occurred (July 5th is the latest possible date), no need to continue.
         if (date.isAfter(LocalDate.of(date.getYear(), 7, 5))) {
             return false;

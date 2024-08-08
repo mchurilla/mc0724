@@ -20,6 +20,8 @@ public class ToolType {
     private final boolean hasWeekendCharge;
     private final boolean hasHolidayCharge;
 
+    // Formatter to display the currency values as US dollar strings.
+    private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new java.util.Locale("en", "us"));
     /**
      * Serializable / deserializable constructor.
      *
@@ -95,9 +97,6 @@ public class ToolType {
     //
     @Override
     public String toString() {
-        // Formatter to display the currency values as US dollar strings.
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new java.util.Locale("en", "us"));
-
         return """
                 Name: %s
                 Daily charge: %s
@@ -106,7 +105,7 @@ public class ToolType {
                 Holiday charge: %s
                 """
                 .formatted(name,
-                       currencyFormat.format(dailyCharge),
+                       CURRENCY_FORMAT.format(dailyCharge),
                        hasWeekdayCharge,
                        hasWeekendCharge,
                        hasHolidayCharge);

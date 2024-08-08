@@ -21,7 +21,7 @@ public class ResourceUtils {
         InputStream inputStream = ResourceUtils.class.getClassLoader().getResourceAsStream(resourceFilename);
 
         if (inputStream == null) {
-            throw new FileNotFoundException("Could not find the resource named: " + resourceFilename);
+            throw new FileNotFoundException(String.format("Could not find the resource named: %s", resourceFilename));
         }
 
         return inputStream;

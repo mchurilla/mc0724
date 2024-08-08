@@ -3,8 +3,8 @@ package churilla.mark.toolrental.exception;
 /**
  * Exception thrown when the calculated number of chargeable days is less than zero.
  * <p>
- * This exception will occur if the calculation that computes the number of days to charge for a patricular tool
- * during a particular timeframe is incorrect and results in a number less than zero.
+ * This exception is thrown when the calculation that determines the chargeable days for a specific tool within a given
+ * timeframe results in a value less than zero, indicating an error in the computation.
  * </p>
  */
 public class NegativeChargeableDaysException extends RuntimeException {

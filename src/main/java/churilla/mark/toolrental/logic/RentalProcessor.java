@@ -26,6 +26,8 @@ public class RentalProcessor {
      * Constructor. Creates a {@link ToolService} object, which reads in the tool data. If the service class cannot
      * read in the tool data for any reason it will throw a {@link ToolDataInitializationException}. If this occurs, the
      * program will not be able to function properly so a {@link FatalException} is thrown to the caller.
+     *
+     * @throws {@link FatalException} if the tool service cannot be instantiated.
      */
     public RentalProcessor() throws FatalException {
         try {
@@ -95,7 +97,7 @@ public class RentalProcessor {
      * Calculates the number of days during the rental period that are chargeable.
      *
      * @param tool The tool being rented.
-     * @param checkoutDate The date that the tool is being checkedout. The first day of the rental is the day following
+     * @param checkoutDate The date that the tool is being checked out. The first day of the rental is the day following
      *                     the checkout date.
      * @param rentalDuration The number of days that the tool is being rented.
      *

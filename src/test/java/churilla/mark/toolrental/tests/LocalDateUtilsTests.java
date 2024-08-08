@@ -21,7 +21,7 @@ public class LocalDateUtilsTests {
     }
 
     @Test
-    void givenNonMondayInSept_whenCheckingForLabordayHoliday_ReturnsFalse() {
+    void givenNonMondayInSept_whenCheckingForLaborDayHoliday_ReturnsFalse() {
         assertFalse(LocalDateUtils.isLaborDayHoliday(LocalDate.of(2015, 9, 4)));
     }
 

@@ -5,7 +5,7 @@ import churilla.mark.toolrental.exception.RequiredFieldNullException;
 /**
  * A utility class providing common validation methods.
  * <p>
- * This class is designed to provide reuseable validation logic for common validation tasks such as ensuring
+ * This class is designed to provide reusable validation logic for common validation tasks such as ensuring
  * that required fields are not null.
  * </p>
  */
@@ -23,6 +23,7 @@ public class ValidationUtils {
      * @param <T> The type of the object being validated.
      *
      * @return The validated object, if it is not null.
+     * @throws {@link RequiredFieldNullException} if the object is null.
      */
     public static <T> T requireNonNull(T object, String fieldName) {
         if (object == null) {

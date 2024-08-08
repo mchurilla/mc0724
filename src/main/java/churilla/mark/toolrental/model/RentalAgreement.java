@@ -30,7 +30,6 @@ public class RentalAgreement {
     private final BigDecimal finalPrice;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yy");
-
     private static final int MIN_DISCOUNT = 0;
     private static final int MAX_DISCOUNT = 100;
     private static final int MIN_RENTAL_DURATION = 1;
@@ -56,11 +55,11 @@ public class RentalAgreement {
         this.checkoutDate = ValidationUtils.requireNonNull(checkoutDate, "checkoutDate");
 
         if (rentalDuration < MIN_RENTAL_DURATION) {
-            throw new InvalidRentalDurationException("The duration of the rental is invalid. Please re-enter a value of 1 or greater.");
+            throw new InvalidRentalDurationException(String.format("The rental duration %s is invalid. Please re-enter a value of 1 or greater.", rentalDuration));
         }
 
         if (discount < MIN_DISCOUNT || discount > MAX_DISCOUNT) {
-            throw new DiscountPercentageRangeException("The discount that was entered is invalid. Please re-enter a value from 0 to 100.");
+            throw new DiscountPercentageRangeException(String.format("The value %s for the discount percentage is invalid. Please provide a number between 0 and 100.", discount));
         }
 
         if (chargeableDays < MIN_CHARGEABLE_DAYS) {
