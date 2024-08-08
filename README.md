@@ -1,6 +1,11 @@
 ## Building
 
-This project is built using Java 17 and uses Maven as a dependecy manager.
+This project was developed using IntelliJ Community Edition version 2022.3.2. It is built using Java 17 and uses Maven as a dependency manager.<br>
+
+## Test Suites
+All JUnit 5 test suites are located under the `src/test/java/*` directory. While there are multiple test suites included, the primary test suite containing the project's proofs is found in the `ToolRentalTests` class.
+
+Each test case used for the proofs is named according to its test number (e.g., test1_**) and is accompanied by Javadocs that provide all relevant information.
 
 ## Maven dependencies
 

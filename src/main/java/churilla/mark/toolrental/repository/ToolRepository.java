@@ -7,22 +7,33 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Repository class that handles reading the ToolDb.json file and internally storing the values for lookup.
+ */
 public class ToolRepository {
 
     // Internally used HashMap to store the rentable tool instances that are read in from the ToolDb.json file.
     private final Map<String, RentableTool> rentableToolMap = new HashMap<>();
 
+    /**
+     * Constructor that attempts to read the values from the ToolDb.json list and place them into
+     * the internal storage map.
+     * <p>
+ *     If any errors occur while trying to populate the map (e.g., the stream cannot be created) Then
+     * a {@link ToolDataInitializationException} will be thrown back to the caller.
+     * </p>
+     */
     public ToolRepository() {
         ObjectMapper mapper = new ObjectMapper();
 
-        try {
-            java.io.File resourceFile = ResourceUtils.getResourceFile("ToolDb.json");
-            List<RentableTool> rentableToolList = mapper.readValue(resourceFile, new TypeReference<>() {});
+        try (InputStream resourceStream = ResourceUtils.getResource("ToolDb.json")) {
+            List<RentableTool> rentableToolList = mapper.readValue(resourceStream, new TypeReference<>() {});
 
             // Cycle through the list of tools and add each on to the map, using the tool code as the key.
             rentableToolList.forEach(tool -> rentableToolMap.putIfAbsent(tool.getToolCode(), tool));
@@ -42,7 +53,6 @@ public class ToolRepository {
      * @return An Optional of the {@link RentableTool} associated with the code, or empty otherwise.
      */
     public Optional<RentableTool> getRentableToolByCode(final String toolCode) {
-
         if (toolCode == null) {
             return Optional.empty();
         }
