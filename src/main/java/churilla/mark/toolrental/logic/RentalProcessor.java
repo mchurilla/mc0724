@@ -1,8 +1,6 @@
 package churilla.mark.toolrental.logic;
 
-import churilla.mark.toolrental.exception.FatalException;
-import churilla.mark.toolrental.exception.ToolDataInitializationException;
-import churilla.mark.toolrental.exception.UnknownToolCodeException;
+import churilla.mark.toolrental.exception.*;
 import churilla.mark.toolrental.model.RentableTool;
 import churilla.mark.toolrental.model.RentalAgreement;
 import churilla.mark.toolrental.model.ToolType;
@@ -46,6 +44,14 @@ public class RentalProcessor {
      * @param discount The percentage discount applied to the rental.
      *
      * @return A {@link RentalAgreement} with details about the rental.
+     *
+     * @throws DiscountPercentageRangeException if the discount percentage supplied to the {@link RentalAgreement}
+     *                                          constructor is not between 0 - 100 (inclusive).
+     * @throws InvalidRentalDurationException if the rental duration supplied to the {@link RentalAgreement} constructor
+     *                                        is less than one.
+     * @throws NegativeChargeableDaysException if the chargeable days is calculated to be less than zero.
+     * @throws RequiredFieldNullException if any objects passed to the {@link RentalAgreement} are null.
+     * @throws UnknownToolCodeException if the tool code is not recognized.
      */
     public RentalAgreement checkout(final String toolCode,
                                     final LocalDate checkoutDate,

@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Repository class that handles reading the ToolDb.json file and internally storing the values for lookup.
  */
 public class ToolRepository {
-
     // Internally used HashMap to store the rentable tool instances that are read in from the ToolDb.json file.
     private final Map<String, RentableTool> rentableToolMap = new ConcurrentHashMap<>();
 
