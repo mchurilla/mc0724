@@ -31,7 +31,7 @@ public class LocalDateUtilsTests {
     }
 
     @Test
-    void givenJuly5th_whenJuly4thISOnSunday_thenReturnsTrue() {
+    void givenJuly5th_whenJuly4thIsOnSunday_thenReturnsTrue() {
         assertTrue(LocalDateUtils.isIndependenceDayHoliday(LocalDate.of(2021, 7, 5)));
     }
 
