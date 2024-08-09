@@ -149,7 +149,7 @@ public class RentalAgreement {
         Rental duration: %s days
         Due date: %s
         Daily rental charge: %s
-        charged days: %s days
+        Charged days: %s days
         Charge before discount: %s
         Discount rate: %s%%
         Total discount: %s
